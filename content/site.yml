@@ -9,10 +9,21 @@ services:
     source: Suggested in the build. Not yet set up.
     launch: true
   hosting_provider:
-    value: Website host to be confirmed
+    value: Cloudflare (cloudflare.com)
     verified: false
-    source: Not yet chosen. See docs/HANDOVER.md for options.
+    source: Chosen 22 Oct 2026. Mark verified once the Pages project exists.
     launch: true
+
+# Online donations through Stripe Payment Links (Stripe hosts the payment page,
+# so card details never touch this website). Create the links in the Stripe
+# dashboard with "customers choose what to pay", then paste them here.
+# Until a link is filled in, the Donate page says online giving opens soon.
+donations:
+  one_off_url: ""     # e.g. https://donate.stripe.com/...
+  monthly_url: ""     # optional, a recurring Payment Link
+  # Optional suggested amounts shown on the page. Only add examples once you've
+  # costed them, e.g. "£15 covers a shared meal for one person".
+  examples: []
 
 # Social links appear in the footer only when a URL is filled in.
 social:

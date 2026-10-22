@@ -24,38 +24,38 @@ tagline:
 
 legal_name:
   value: Seek My Tribe CIC
-  verified: false
-  source: Assumed from the project brief. Not found on Companies House by this name on 22 Oct 2026.
+  verified: true
+  source: Companies House record for 17534966, checked 22 Oct 2026
   launch: true
 
 legal_form:
   value: a community interest company (CIC) limited by guarantee
-  verified: false
-  source: Project brief says CIC; company type (guarantee or shares) not yet confirmed.
+  verified: true
+  source: Companies House record for 17534966, checked 22 Oct 2026 (private company limited by guarantee without share capital, CIC)
   launch: true
 
 jurisdiction:
   value: England and Wales
-  verified: false
-  source: Assumed. Confirm on the certificate of incorporation.
+  verified: true
+  source: Companies House record for 17534966, checked 22 Oct 2026 (registered office in London)
   launch: true
 
 company_number:
-  value: "00000000"
-  verified: false
-  source: Not yet supplied.
+  value: "17534966"
+  verified: true
+  source: Companies House record for 17534966, checked 22 Oct 2026
   launch: true
 
 registered_office:
-  value: Registered office address to be confirmed
-  verified: false
-  source: Not yet supplied.
+  value: 128 City Road, London, EC1V 2NX
+  verified: true
+  source: Companies House record for 17534966, checked 22 Oct 2026
   launch: true
 
 incorporated:
-  value: Date of incorporation to be confirmed
-  verified: false
-  source: Not yet supplied.
+  value: 22 October 2026
+  verified: true
+  source: Companies House record for 17534966, checked 22 Oct 2026
   launch: false
 
 community_interest_statement:
@@ -64,7 +64,7 @@ community_interest_statement:
     opportunities for people to meet, take part in shared activities and learn
     from one another in the real world.
   verified: false
-  source: Paraphrase of the project brief. Replace with the wording filed in the CIC 36 form.
+  source: Paraphrase of the project brief. Replace with the wording in the CIC 36 filed at incorporation (Companies House filing history).
   launch: true
 
 asset_lock:
@@ -77,10 +77,10 @@ asset_lock:
 
 directors:
   value:
-    - name: Director name to be confirmed
+    - name: Dr Ravjot Kaur Bajwa
       role: Director
-  verified: false
-  source: Not yet supplied. Check against the Companies House officer list.
+  verified: true
+  source: Companies House record for 17534966, checked 22 Oct 2026 (officer list)
   launch: true
 
 area:

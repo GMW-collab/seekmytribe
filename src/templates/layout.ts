@@ -90,6 +90,7 @@ ${previewBanner(ctx)}
     <nav id="site-nav" class="site-nav" aria-label="Main">
       <ul>
         ${NAV.map((n) => html`<li><a href="${n.href}" class="${cx(page.section === n.section && "is-current")}"${page.section === n.section ? raw(' aria-current="page"') : raw("")}>${n.label}</a></li>`)}
+        ${ctx.content.settings.donations.one_off_url ? html`<li><a class="site-nav__donate${page.section === "donate" ? " is-current" : ""}" href="/donate/"${page.section === "donate" ? raw(' aria-current="page"') : raw("")}>Donate</a></li>` : raw("")}
         <li><a class="site-nav__contact${page.section === "contact" ? " is-current" : ""}" href="/contact/"${page.section === "contact" ? raw(' aria-current="page"') : raw("")}>Contact</a></li>
       </ul>
     </nav>
@@ -119,6 +120,7 @@ ${page.body}
         <li><a href="/about/">About us</a></li>
         <li><a href="/impact/">Our impact</a></li>
         <li><a href="/partners/">Partners and funders</a></li>
+        <li><a href="/donate/">Donate</a></li>
         <li><a href="/contact/">Contact</a></li>
       </ul>
       <h2>Policies</h2>

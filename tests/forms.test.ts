@@ -54,15 +54,15 @@ test("clean() strips control characters", () => {
   assert.equal(clean("a\u0000b\u001Fc"), "abc");
 });
 
-test("form tokens: valid, too fast, expired and forged", () => {
+test("form tokens: valid, too fast, expired and forged", async () => {
   const t0 = 1_000_000_000_000;
-  const token = makeToken(SECRET, t0);
-  assert.equal(checkToken(token, SECRET, t0 + 5_000), "ok");
-  assert.equal(checkToken(token, SECRET, t0 + 1_000), "too-fast");
-  assert.equal(checkToken(token, SECRET, t0 + 2 * 86_400_000), "expired");
-  assert.equal(checkToken(token, "other-secret", t0 + 5_000), "forged");
-  assert.equal(checkToken(`${t0}.abc`, SECRET, t0 + 5_000), "forged");
-  assert.equal(checkToken(undefined, SECRET), "missing");
+  const token = await makeToken(SECRET, t0);
+  assert.equal(await checkToken(token, SECRET, t0 + 5_000), "ok");
+  assert.equal(await checkToken(token, SECRET, t0 + 1_000), "too-fast");
+  assert.equal(await checkToken(token, SECRET, t0 + 2 * 86_400_000), "expired");
+  assert.equal(await checkToken(token, "other-secret", t0 + 5_000), "forged");
+  assert.equal(await checkToken(`${t0}.abc`, SECRET, t0 + 5_000), "forged");
+  assert.equal(await checkToken(undefined, SECRET), "missing");
 });
 
 test("rate limiter allows five then blocks, and recovers", () => {
@@ -86,11 +86,11 @@ function deps(sent: OutgoingEmail[], result: "ok" | "not-configured" | "failed" 
     },
   };
 }
-const validContact = () => ({ name: "Sam", email: "sam@example.org", topic: "general", message: "Hello", _t: makeToken(SECRET, 2_000_000_000_000 - 10_000) });
+const validContact = async () => ({ name: "Sam", email: "sam@example.org", topic: "general", message: "Hello", _t: await makeToken(SECRET, 2_000_000_000_000 - 10_000) });
 
 test("handler: a valid submission is emailed with a reply-to", async () => {
   const sent: OutgoingEmail[] = [];
-  const r = await handleSubmission("contact", validContact(), "1.1.1.1", deps(sent));
+  const r = await handleSubmission("contact", (await validContact()), "1.1.1.1", deps(sent));
   assert.equal(r.status, 200);
   assert.equal(r.body.redirect, "/thanks/contact/");
   assert.equal(sent[0]?.replyTo, "sam@example.org");
@@ -99,28 +99,28 @@ test("handler: a valid submission is emailed with a reply-to", async () => {
 
 test("handler: honeypot submissions look successful but send nothing", async () => {
   const sent: OutgoingEmail[] = [];
-  const r = await handleSubmission("contact", { ...validContact(), website: "http://spam" }, "1.1.1.1", deps(sent));
+  const r = await handleSubmission("contact", { ...(await validContact()), website: "http://spam" }, "1.1.1.1", deps(sent));
   assert.equal(r.body.ok, true);
   assert.equal(sent.length, 0);
 });
 
 test("handler: invalid answers return field errors and send nothing", async () => {
   const sent: OutgoingEmail[] = [];
-  const r = await handleSubmission("contact", { ...validContact(), email: "nope" }, "1.1.1.1", deps(sent));
+  const r = await handleSubmission("contact", { ...(await validContact()), email: "nope" }, "1.1.1.1", deps(sent));
   assert.equal(r.status, 422);
   assert.ok(r.body.errors?.email);
   assert.equal(sent.length, 0);
 });
 
 test("handler: if email isn't set up, visitors are told plainly where to write instead", async () => {
-  const r = await handleSubmission("contact", validContact(), "1.1.1.1", deps([], "not-configured"));
+  const r = await handleSubmission("contact", (await validContact()), "1.1.1.1", deps([], "not-configured"));
   assert.equal(r.status, 503);
   assert.match(r.body.message, /isn't switched on yet.*hello@example\.org/);
 });
 
 test("handler: unknown forms and missing tokens are refused", async () => {
   assert.equal((await handleSubmission("nope", {}, "ip", deps([]))).status, 404);
-  const { _t, ...noToken } = validContact();
+  const { _t, ...noToken } = (await validContact());
   void _t;
   assert.equal((await handleSubmission("contact", noToken, "ip", deps([]))).status, 400);
 });

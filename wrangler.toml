@@ -1,0 +1,10 @@
+# Cloudflare Pages configuration. See docs/HANDOVER.md, "Hosting on Cloudflare Pages".
+name = "seekmytribe"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-09-01"
+
+# Non-secret settings. Secrets (FORM_SECRET, RESEND_API_KEY) are added in the
+# Cloudflare dashboard, never here.
+[vars]
+SITE_URL = "https://seekmytribe.com"
+FORM_FROM_EMAIL = "Seek My Tribe website <website@seekmytribe.com>"

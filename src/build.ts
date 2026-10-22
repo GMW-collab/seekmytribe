@@ -11,6 +11,7 @@ import { assertLaunchReady, listUnverified, type SiteMode } from "./lib/facts.ts
 import { buildForms } from "./forms/definitions.ts";
 import type { Ctx, Page } from "./templates/context.ts";
 import { layout } from "./templates/layout.ts";
+import { cloudflareHeadersFile } from "./lib/headers.ts";
 import * as P from "./templates/pages/participants.ts";
 import * as O from "./templates/pages/organisation.ts";
 
@@ -22,6 +23,8 @@ export interface BuildOptions {
   fontSource: "self" | "google";
   contentDir?: string;
   outDir?: string;
+  /** Where to write the data the Cloudflare form Function imports. Set to null to skip. */
+  functionsDataDir?: string | null;
   builtAt?: Date;
   quiet?: boolean;
 }
@@ -44,6 +47,8 @@ export function collectPages(ctx: Ctx): Page[] {
     O.partnersPage(ctx),
     ...O.visibleProgrammes(ctx).map((p) => O.programmePage(ctx, p)),
     O.overviewPage(ctx),
+    O.donatePage(ctx),
+    O.donateThanksPage(ctx),
     ...ctx.content.policies.map((p) => P.policyPage(ctx, p.slug)),
     ...Object.keys(ctx.forms).map((id) => P.thanksPage(ctx, id)),
     P.notFoundPage(ctx),
@@ -121,6 +126,14 @@ export function build(opts: BuildOptions): { pages: Page[]; outDir: string } {
   writeFileSync(join(outDir, "activities.json"), JSON.stringify(activities));
   writeFileSync(join(outDir, "sitemap.xml"), sitemap(ctx, pages));
   writeFileSync(join(outDir, "robots.txt"), robots(ctx));
+  writeFileSync(join(outDir, "_headers"), cloudflareHeadersFile(ctx.fontSource));
+
+  // Data for the Cloudflare Pages form Function (functions/api/forms/[form].ts).
+  const functionsDataDir = opts.functionsDataDir === undefined ? join(ROOT, "functions", "_generated") : opts.functionsDataDir;
+  if (functionsDataDir) {
+    mkdirSync(functionsDataDir, { recursive: true });
+    writeFileSync(join(functionsDataDir, "site.json"), JSON.stringify({ forms: ctx.forms, contactEmail: content.organisation.email.value }, null, 1));
+  }
 
   if (!opts.quiet) {
     console.log(`Built ${pages.length} pages in ${opts.mode} mode → ${outDir}`);
@@ -134,12 +147,23 @@ export function build(opts: BuildOptions): { pages: Page[]; outDir: string } {
 }
 
 // Run when called directly: node src/build.ts
+/**
+ * Decide the mode. SITE_MODE wins if set. On Cloudflare Pages, the "main" branch
+ * builds the public site and every other branch builds a review copy.
+ */
+export function resolveMode(env: NodeJS.ProcessEnv): SiteMode {
+  if (env.SITE_MODE === "production" || env.SITE_MODE === "preview") return env.SITE_MODE;
+  if (env.CF_PAGES === "1") return env.CF_PAGES_BRANCH === "main" ? "production" : "preview";
+  return "preview";
+}
+
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const mode: SiteMode = process.env.SITE_MODE === "production" ? "production" : "preview";
+  const mode = resolveMode(process.env);
+  const cfPreviewUrl = process.env.CF_PAGES === "1" && mode === "preview" ? process.env.CF_PAGES_URL : undefined;
   try {
     build({
       mode,
-      siteUrl: process.env.SITE_URL || "https://seekmytribe.com",
+      siteUrl: cfPreviewUrl || process.env.SITE_URL || "https://seekmytribe.com",
       fontSource: process.env.FONT_SOURCE === "google" ? "google" : "self",
     });
   } catch (err) {

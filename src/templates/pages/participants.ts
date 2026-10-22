@@ -116,6 +116,7 @@ ${upcoming.length
 ${ctaBand("Know a space, have a skill, or want to help?", "Activities depend on people who host, share what they know and spread the word.", [
     { href: "/get-involved/", label: "Ways to get involved" },
     { href: "/suggest/", label: "Suggest an activity", quiet: true },
+    { href: "/donate/", label: "Donate", quiet: true },
   ])}
 `;
 

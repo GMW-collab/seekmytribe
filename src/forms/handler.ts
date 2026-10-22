@@ -47,7 +47,7 @@ export async function handleSubmission(formId: string, fields: RawFields, ip: st
   }
 
   const token = typeof fields[TOKEN_FIELD] === "string" ? (fields[TOKEN_FIELD] as string) : undefined;
-  const tokenState = checkToken(token, deps.secret, now);
+  const tokenState = await checkToken(token, deps.secret, now);
   if (tokenState === "too-fast") {
     return { status: 400, body: { ok: false, message: "That was quicker than we expected. Please check your answers and send the form again." } };
   }

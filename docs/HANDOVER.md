@@ -14,10 +14,8 @@ are blocked by the site's robots rules, so it was read through a browser.
 
 **Repository (GMW-collab/seekmytribe).** Empty: no commits, code or assets.
 
-**Public records.** No company called Seek My Tribe CIC was found on Companies
-House on 22 October 2026. The company may be registered under a different
-name, very recently registered, or not yet registered. **Every legal fact on the
-site is therefore marked "to confirm"** (see section 6).
+**Public records.** The company was incorporated on 22 October 2026 and its
+record was confirmed later that day (see section 6).
 
 **Useful assets carried over:** the name and the tagline. Nothing else existed.
 
@@ -25,7 +23,8 @@ site is therefore marked "to confirm"** (see section 6).
 
 | Decision | Why |
 | --- | --- |
-| No framework; a small TypeScript build script and Node server | The package registry was unavailable during the build. On reflection this suits a small CIC: two runtime dependencies, nothing to upgrade, runs on any Node host. Astro was the original plan and remains a reasonable migration later. |
+| Cloudflare Pages for hosting (Node server kept as a fallback) | Free, fast, no server to maintain; the CIC already uses Cloudflare. |
+| No framework; a small TypeScript build script | The package registry was unavailable during the build. On reflection this suits a small CIC: two runtime dependencies, nothing to upgrade, runs on any Node host. Astro was the original plan and remains a reasonable migration later. |
 | Content in YAML/Markdown files, edited through Decap CMS | Free, no database, every change is a reviewable commit, staff don't need to touch code. |
 | No database; form submissions are emailed | Data minimisation. Nothing personal is stored on the web server. |
 | No cookies, analytics or third-party scripts on public pages | Removes the need for a cookie banner and simplifies the privacy notice. Add privacy-friendly analytics later only if it will be used. |
@@ -81,6 +80,8 @@ photography: when real activities run, add real photos taken with consent.
 /partners/                      Partners and funders hub
 /partners/programmes/<slug>/    Programme pages ("proposed" and later; drafts in review copy only)
 /partners/overview/             Printable organisational overview
+/donate/                        Support our work (Stripe Payment Links)
+/donate/thank-you/              Where Stripe returns donors (not indexed)
 /privacy/  /safeguarding/  /accessibility/  /participation-guidelines/  /complaints/
 /thanks/<form>/                 Confirmation pages (not indexed)
 /admin/                         Content editor (not indexed)
@@ -142,45 +143,115 @@ a daily rebuild on the host so this happens without anyone remembering.
 
 ## 6. Content that must be verified before launch
 
-The production build refuses to run until items marked **launch** are confirmed.
+Company details were confirmed against [Companies House](https://find-and-update.company-information.service.gov.uk/company/17534966) on 22 October 2026: **SEEK MY TRIBE CIC**, company number **17534966**, private company limited by guarantee without share capital, incorporated **22 October 2026**, registered office **128 City Road, London, EC1V 2NX**, director **Dr Ravjot Kaur Bajwa**. These are now marked verified.
+
+The production build still refuses to run until the items marked **launch** are confirmed.
 
 | Item | Status | What to do |
 | --- | --- | --- |
-| Registered name | Assumed "Seek My Tribe CIC" | Check certificate of incorporation **(launch)** |
-| Legal form | Assumed CIC limited by guarantee | Check articles **(launch)** |
-| Jurisdiction | Assumed England and Wales | Check certificate **(launch)** |
-| Company number | Placeholder | Companies House **(launch)** |
-| Registered office | Placeholder | Companies House **(launch)** |
-| Community interest statement | Paraphrased from brief | Use the CIC 36 wording **(launch)** |
-| Directors | Placeholder | Companies House officer list **(launch)** |
-| Contact email | `hello@seekmytribe.com` assumed | Confirm the mailbox exists and is monitored **(launch)** |
+| Community interest statement | Paraphrased from brief | Replace with the CIC 36 wording from the incorporation documents **(launch)** |
+| Contact email | `hello@seekmytribe.com` assumed | Create the mailbox or forwarding (see section 7) **(launch)** |
 | Safeguarding lead | Not appointed | Appoint before any activity **(launch)** |
-| Email provider, host | Not chosen | Set up; confirm data processing terms **(launch)** |
-| Incorporation date, area, phone, postal address, insurance | Not supplied | Add when known |
-| "We haven't yet run activities or received grant funding" (Partners page, overview) | Inferred from the holding page and brief | Confirm, and update as soon as it changes |
+| Email provider, host | Chosen (Resend, Cloudflare Pages) but not set up | Mark verified once accounts exist **(launch)** |
+| Asset lock wording | Standard CIC wording | Check against the articles |
+| Area, phone, postal address, insurance | Not supplied | Add when known |
+| "We haven't yet run activities or received grant funding" (Partners page, overview) | True as of incorporation today | Update as soon as it changes |
 | Pricing approach (free / pay-what-you-can) | Stated as an aim | Confirm once costed |
-| Response times in complaints policy (5 and 20 working days) | Drafted | Confirm directors can meet them |
-| Every policy page | Drafts | Directors to review and adopt; see section 8 |
+| Response times in complaints policy (5 and 20 working days) | Drafted | Confirm the director can meet them |
+| Donation refund window | Not set | Decide (e.g. 30 days) and state it on the Donate page |
+| Every policy page | Drafts | Director to review and adopt; see section 8 |
 
-Editor notes (dashed purple boxes in the review copy) also mark where founders'
-story and sourced statistics should go. They never appear in production.
+The registered office (128 City Road) is a widely used registered-address service. That's fine for legal notices, but it's not where activities happen or where post for participants should go, so the site doesn't present it as a contact address.
 
----
+Editor notes (dashed purple boxes in the review copy) also mark where the founder's story, sourced statistics and costed donation examples should go. They never appear in production.
 
-## 7. Accounts, integrations and configuration needed
+## 7. Hosting on Cloudflare Pages, and moving the domain from GoDaddy
 
-| What | Why | Notes |
+**Recommendation: Cloudflare Pages, free plan.** The site's pages are static files, which Pages serves from Cloudflare's network at no cost, and the form handling runs as Pages Functions (small pieces of server code that run on Cloudflare). There is no server to maintain. The free plan includes a daily allowance of Function requests that is far above what this site will need; check Cloudflare's current limits when you sign up. Only page loads and form posts use Functions; CSS, images and scripts don't (see `public/_routes.json`).
+
+The Node server (`npm start`) is still included, so the site can move to any other host later without changes.
+
+### Accounts the director needs to create
+
+Claude can't create accounts or enter passwords, so these need doing by a person:
+
+| Account | Why | Cost |
 | --- | --- | --- |
-| A Node 22 host | Runs `npm start` | Any Node host works (e.g. Render, Railway, Fly.io, a small VPS). Compare current pricing; a free tier that sleeps will make the first page load slow. Set `SITE_MODE=production`, `FORM_SECRET`, email settings and `TRUST_PROXY=true` if behind a proxy. Health check: `/healthz`. |
-| Resend account (or swap the sender) | Delivers form emails | Verify the `seekmytribe.com` sending domain (DNS records). Only `src/forms/mailer.ts` needs changing to use another provider. Not configured or tested with a live key. |
-| A monitored inbox | Receives submissions | Set as `FORM_TO_EMAIL`. Agree who reads it and how often. |
-| Decap CMS sign-in | Lets staff use `/admin/` | Needs an OAuth helper for GitHub (several free options, or use Netlify/DecapBridge). Not configured. |
-| Claude GitHub access | So changes can be pushed from Claude | Pushing was refused in this session. Install the Claude GitHub App on the repository, or push the code yourself. |
-| Fonts | Self-hosted typefaces | Run `npm run fonts` once and commit `public/fonts/`. The font CDN was blocked during the build, so this is untested. |
-| Domain (GoDaddy) | Point at the new host | **Not changed.** Only switch DNS once the production build passes and someone has approved it. |
-| ICO data protection fee | Legal requirement for most organisations processing personal data | Check whether an exemption applies; most small organisations pay a modest annual fee. |
+| GitHub (already exists: GMW-collab) | Holds the code; Cloudflare deploys from it | Free |
+| Cloudflare | Hosting, DNS, optional email forwarding | Free plan |
+| Resend | Sends form submissions to your inbox | Has a free tier; check current limits |
+| Stripe | Donations (section 7b) | No monthly fee; a fee per donation |
 
----
+### Step by step
+
+1. **Put the code on GitHub.** Push the delivered code to `GMW-collab/seekmytribe`, or install the Claude GitHub App on that repository so Claude can push.
+2. **Create the Pages project.** In Cloudflare: Workers & Pages → Create → Pages → Connect to Git → choose the repository.
+   - Framework preset: *None*
+   - Build command: `npm run build:cloudflare`
+   - Build output directory: `dist`
+   - Node version comes from `.node-version` (22.22.0).
+3. **Add settings.** Pages project → Settings → Variables and secrets:
+   - `FORM_SECRET` (type: secret) — a long random string. Generate one with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.
+   - `RESEND_API_KEY` (secret) — from Resend.
+   - `FORM_TO_EMAIL` — the inbox that receives submissions.
+   - `SITE_URL` and `FORM_FROM_EMAIL` are already in `wrangler.toml`.
+4. **Deploy a review copy first.** The `main` branch builds the public site, which is deliberately blocked until the launch facts in section 6 are verified. Push a branch called `preview` to get a review copy at a `*.pages.dev` address. Every non-`main` branch builds as a review copy, hidden from search engines.
+5. **Check the review copy** (this couldn't be tested from here): load a few pages; view source and confirm forms contain a long `_t` value, not `__FORM_TOKEN__`; send one test from the contact form; open `/donate/`.
+6. **Verify the launch facts**, merge to `main`, and Cloudflare publishes the public site.
+7. **Optional hardening.** In Cloudflare → Security → WAF, add a rate-limiting rule for `/api/forms/*` if your plan includes one. The site's built-in limit is a soft one on Cloudflare.
+
+### Moving the domain from GoDaddy
+
+The domain can stay **registered** at GoDaddy. What changes is who answers for it (DNS).
+
+**Recommended: switch the nameservers to Cloudflare.** Needed for the bare `seekmytribe.com` (without `www`) to point at Pages.
+
+1. In Cloudflare: Add a domain → `seekmytribe.com` → Free plan. Cloudflare copies the existing DNS records.
+2. **Before switching, check the email records.** If anyone has email at `@seekmytribe.com` (GoDaddy email or Microsoft 365, for example), confirm the `MX`, `TXT` (SPF) and any `CNAME` records were copied exactly. Missing these stops email working. If unsure, compare against GoDaddy's DNS page first.
+3. In GoDaddy: My Products → the domain → DNS → Nameservers → Change → enter the two nameservers Cloudflare gives you. It can take from minutes to a day.
+4. In the Pages project: Custom domains → add `seekmytribe.com` and `www.seekmytribe.com`. Cloudflare sets up the records and HTTPS certificates.
+5. Once the new site is live, cancel the GoDaddy Website Builder plan (keep the domain registration, and keep auto-renew on).
+
+**Alternative, if you'd rather leave DNS at GoDaddy:** point `www` at the Pages address with a `CNAME` in GoDaddy, and use GoDaddy's domain forwarding to send `seekmytribe.com` to `https://www.seekmytribe.com`. This works but is less tidy, and forwarding can be unreliable over HTTPS.
+
+**Do not change nameservers or DNS without the director's go-ahead.** Nothing has been changed so far.
+
+### Email
+
+- **Receiving at hello@seekmytribe.com:** if there's no mailbox yet, Cloudflare Email Routing (free) can forward it to an existing inbox. Don't use it if the domain already has mailboxes elsewhere; it replaces the `MX` records.
+- **Sending form submissions:** in Resend, add `seekmytribe.com` as a sending domain and add the records it gives you in Cloudflare DNS.
+
+### Content editor (/admin/)
+
+Decap CMS needs a small sign-in helper for GitHub. On Cloudflare, this can be a free Worker (several open-source "Decap OAuth" Workers exist) plus a GitHub OAuth app. This hasn't been set up. Until it is, edit files in `content/` on GitHub directly.
+
+## 7b. Donations
+
+**Approach: Stripe Payment Links.** The Donate page links to a payment page hosted by Stripe. Why this rather than an embedded widget:
+
+- No third-party script on the site, so pages stay fast, cookie-free and covered by the strict security policy.
+- Card details never touch the site, so there's no card-security compliance burden for the CIC.
+- Receipts, Apple Pay and Google Pay come built in.
+- No monthly fee.
+
+**What the site does now:** `/donate/` explains what gifts pay for and what you promise in return, states clearly that donations aren't eligible for Gift Aid, and offers other ways to help. Until a Stripe link is added it says "Online giving opens soon", and the header Donate button stays hidden. Once a link is added, the Give buttons and the header button appear.
+
+**To switch it on (director):**
+
+1. Create a Stripe account for **Seek My Tribe CIC** (company 17534966). Stripe will verify the business and the director's identity, and may ask about donations specifically.
+2. Stripe dashboard → Payment Links → New:
+   - One-off: a product called "Donation to Seek My Tribe CIC", priced with **"Customers choose what to pay"**. Set a sensible suggested amount.
+   - Monthly (optional): a recurring price. Monthly links use set amounts, so create one per amount you want to offer, or start with a single amount.
+   - After payment: redirect to `https://seekmytribe.com/donate/thank-you/`.
+3. Paste the link(s) into `content/site.yml` under `donations` and push. The build only accepts `https://donate.stripe.com/` or `https://buy.stripe.com/` links, so a typo can't send donors somewhere unsafe.
+4. Mark the donation refund window on the Donate page (editor note).
+
+**Rules to keep to**
+
+- Never describe donations as tax-deductible or Gift Aid-eligible. CICs can't register as charities.
+- Report what donations paid for on the Impact page and in the annual CIC 34 report, as the Donate page promises.
+- Consider registering voluntarily with the Fundraising Regulator and following the Code of Fundraising Practice. It's optional for a CIC but reassures donors.
+- Keep donation records for six years (as the privacy notice says).
 
 ## 8. Governance and safeguarding still outstanding
 
@@ -229,21 +300,24 @@ In rough order:
 
 ## 11. Deploying and rolling back
 
-**Deploy**
+**Deploy (Cloudflare Pages)**
+
+Push to `main`. Cloudflare runs `npm run build:cloudflare` and publishes. Any other branch gets its own review address. Run `npm run check` locally before pushing if you can.
+
+**Deploy (any other Node host)**
 
 ```sh
-git pull
 npm ci
 npm run check
 SITE_MODE=production SITE_URL=https://seekmytribe.com npm run build:production
-npm start            # or let the host run this
+npm start
 ```
-
-Most hosts can run the build on every push to `main` and restart the server.
 
 **Roll back**
 
-Every deploy is a commit. To undo the last change: `git revert <commit>` and push,
+In Cloudflare Pages → Deployments, choose an earlier deployment → "Rollback to this deployment". It takes effect in seconds.
+
+Every deploy is also a commit. To undo the last change: `git revert <commit>` and push,
 or redeploy the previous commit from the host's dashboard. Content edits made in
 the CMS are commits too, so they roll back the same way. There's no database to
 restore.
@@ -256,13 +330,17 @@ without the directors' approval.
 ## 12. Quality checks performed
 
 - `npm run typecheck`: no errors.
-- `npm test`: 48 tests pass, covering content validation, the production guard, form validation, spam protection, email sending (with a fake), the server's headers, redirects, path-traversal protection, no-JavaScript form fallbacks, and the build output (one h1 per page, labelled controls, no broken internal links, no leaked placeholders).
+- `npm test`: 57 tests pass, covering content validation, the production guard, form validation, spam protection, email sending (with a fake), the server's headers, redirects, path-traversal protection, no-JavaScript form fallbacks, and the build output (one h1 per page, labelled controls, no broken internal links, no leaked placeholders).
 - `npm run test:browser` (Playwright/Chromium): every page at 320px and 1280px with no sideways scrolling; WCAG AA text contrast for all visible text (the check was confirmed to catch a deliberate failure); skip link and visible focus; mobile menu including Escape; contact form error summary, focus and `aria-invalid`; the honest "not switched on yet" message when email isn't configured; activity filters, URL state and no-results message (using test fixtures).
 - Manual review of screenshots for the home page, activities (empty and with fixtures), activity detail, partners, impact and about pages, at desktop and mobile widths.
 
+- Cloudflare Functions: the form handler and middleware are tested with standard Request/Response objects, bundled with esbuild for a Workers runtime (no Node-only imports), and the bundle was run once successfully.
+
 **Not yet tested**
 
+- A real deploy on Cloudflare Pages (follow the checks in section 7, step 5).
 - Real email delivery (needs a Resend key).
+- Live Stripe links.
 - Self-hosted fonts (CDN blocked during build).
 - The Decap CMS editor (needs sign-in setup).
 - Screen readers (NVDA, VoiceOver) and testing with disabled users. Recommended before launch.
@@ -270,6 +348,6 @@ without the directors' approval.
 
 **Known limitations**
 
-- The rate limiter is in memory and resets when the server restarts. Fine at this scale.
+- The built-in rate limiter is in memory: per process on Node, per isolate on Cloudflare. Add a Cloudflare rate-limiting rule for a hard limit.
 - Past activities drop off listings at build time, so schedule a daily rebuild.
 - Dark mode isn't provided; the light theme was chosen for contrast and warmth.

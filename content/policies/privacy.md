@@ -26,6 +26,14 @@ We only collect what you choose to send us through a form.
 | Partners and funders | Name, organisation, email, your enquiry | To respond to your enquiry | Legitimate interests |
 | Updates | Email, and optionally your name | To send occasional news | Consent |
 
+### Donations
+
+If you donate online, your payment is handled by Stripe on its own secure page.
+Stripe processes your card details under its own privacy policy; we never see
+them. Stripe shares with us your name, email address, the amount and the date,
+so we can send receipts and keep accounts. We keep donation records for six
+years after the end of the financial year, as UK company accounting rules require.
+
 We ask you not to share health or other sensitive information through the
 website. If you need to tell us about an access requirement, we'll use that
 only to make the adjustment you ask for.

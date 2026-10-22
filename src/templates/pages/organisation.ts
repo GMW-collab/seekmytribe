@@ -244,6 +244,7 @@ export function partnersPage(ctx: Ctx): Page {
       <li><h3>Delivery partnerships</h3><p>Running activities together, or bringing our approach to your members or residents.</p></li>
       <li><h3>Referral partnerships</h3><p>Pointing people towards activities: GP surgeries, social prescribers, housing providers, libraries.</p></li>
       <li><h3>In-kind and sponsorship</h3><p>Materials, food, printing, professional skills or employee volunteering.</p></li>
+      <li><h3>Individual donations</h3><p>Anyone can <a href="/donate/">give online</a>, once or monthly.</p></li>
     </ul>
     <p class="small">CICs can't register as charities, so donations to us aren't eligible for Gift Aid. Some grant programmes are open only to charities; we'll always check eligibility before applying.</p>
   </div>
@@ -264,6 +265,98 @@ export function partnersPage(ctx: Ctx): Page {
     description: "For funders, venues, local authorities and delivery partners: Seek My Tribe's mission, programmes, evaluation approach and governance.",
     body,
     section: "partners",
+  };
+}
+
+// ---------------------------------------------------------------- Donate
+
+export function donatePage(ctx: Ctx): Page {
+  const d = ctx.content.settings.donations;
+  const open = Boolean(d.one_off_url);
+  const giving = open
+    ? html`<div class="give-panel">
+        <h2>Give online</h2>
+        <p>You'll go to a secure payment page run by Stripe, then come back here. We never see your card details.</p>
+        <ul class="action-list">
+          <li><a class="button button--marigold" href="${d.one_off_url}" rel="noopener">Give once, any amount</a></li>
+          ${d.monthly_url ? html`<li><a class="button" href="${d.monthly_url}" rel="noopener">Give monthly</a></li>` : raw("")}
+        </ul>
+        <p class="small">${d.monthly_url ? "Monthly gifts are a set amount, shown on the payment page. You can cancel at any time by asking us. " : ""}Card payments are accepted, plus Apple Pay and Google Pay where your device supports them.</p>
+      </div>`
+    : html`<div class="give-panel">
+        <h2>Online giving opens soon</h2>
+        <p>We're setting up a secure way to give online. In the meantime, if you'd like to support us, please <a href="/contact/">get in touch</a> and we'll explain the options.</p>
+        ${editorNote("Paste the Stripe Payment Link into content/site.yml (donations.one_off_url) and the Give buttons will appear here and in the header.", ctx)}
+      </div>`;
+
+  const body = html`${pageHeader("Support our work", "Gifts of any size help us bring people together. Here's what your money is for, and what we promise in return.")}
+<div class="wrap section split">
+  <div>
+    ${giving}
+    ${d.examples.length ? html`<h2>What a gift can do</h2><ul class="soft-list">${d.examples.map((e) => html`<li>${e}</li>`)}</ul>` : editorNote("Once activities are costed, add a few concrete examples in content/site.yml (donations.examples), such as what pays for one shared meal. Don't add estimates.", ctx)}
+  </div>
+  <div class="tinted-panel">
+    <h2>What donations pay for</h2>
+    <p>We're a new organisation, and donations will help us cover the things every activity depends on:</p>
+    <ul>
+      <li>venue hire and refreshments</li>
+      <li>materials for making and learning sessions</li>
+      <li>free and pay-what-you-can places, so cost never stops anyone coming</li>
+      <li>insurance, safeguarding checks and training for hosts</li>
+    </ul>
+    <h2>Our promises to you</h2>
+    <ul>
+      <li>As a community interest company, everything we have is locked to community benefit by law. No one profits from your gift.</li>
+      <li>We'll report how donations were spent on our <a href="/impact/">impact page</a> and in our annual community interest report.</li>
+      <li>We won't share your details or ask you for more than you've chosen to give.</li>
+    </ul>
+  </div>
+</div>
+<section class="section section--tinted">
+  <div class="wrap split">
+    <div>
+      <h2>Good to know before you give</h2>
+      <p>${fact(ctx.content.organisation.charity_status, ctx)}</p>
+      <p>If you've given by mistake, email us and we'll sort it out.</p>
+      ${editorNote("Decide and state a refund window (for example, 30 days) before launch.", ctx)}
+      <p>Read how we handle donor information in our <a href="/privacy/">privacy notice</a>.</p>
+    </div>
+    <div>
+      <h2>Other ways to help</h2>
+      <ul>
+        <li><a href="/get-involved/">Give time</a>: help at activities, host a group or share a skill.</li>
+        <li><a href="/get-involved/">Offer a space</a> for a regular small group.</li>
+        <li><a href="/partners/">Fund or partner with us</a> as an organisation.</li>
+      </ul>
+    </div>
+  </div>
+</section>`;
+
+  return {
+    path: "/donate/",
+    title: "Support our work",
+    description: "Donate to Seek My Tribe CIC to help fund welcoming, real-world activities that bring people together.",
+    body,
+    section: "donate",
+  };
+}
+
+export function donateThanksPage(_ctx: Ctx): Page {
+  return {
+    path: "/donate/thank-you/",
+    title: "Thank you for your gift",
+    description: "Thank you for supporting Seek My Tribe.",
+    noindex: true,
+    section: "donate",
+    body: html`<div class="wrap section narrow confirmation">
+      <h1>Thank you for your gift</h1>
+      <p class="lede">It will help someone find a seat at the table. Stripe will email you a receipt.</p>
+      <p>If anything about your donation doesn't look right, please <a href="/contact/">get in touch</a>.</p>
+      <ul class="action-list">
+        <li><a class="button" href="/activities/register/">Hear when activities start</a></li>
+        <li><a class="button button--quiet" href="/">Back to the home page</a></li>
+      </ul>
+    </div>`,
   };
 }
 

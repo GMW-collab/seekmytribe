@@ -62,7 +62,7 @@ test("front matter must be present", () => {
 });
 
 test("production builds are blocked while launch-critical facts are unverified", () => {
-  assert.throws(() => assertLaunchReady(content.organisation, content.settings), /company_number/);
+  assert.throws(() => assertLaunchReady(content.organisation, content.settings), /safeguarding_lead/);
   const verified = structuredClone(content.organisation);
   for (const f of Object.values(verified)) (f as { verified: boolean }).verified = true;
   const settings = structuredClone(content.settings);
@@ -77,4 +77,12 @@ test("unverified facts are flagged in preview and hidden in production", () => {
   assert.match(fact(f, { mode: "preview" }).value, /To confirm/);
   assert.equal(fact(f, { mode: "production" }).value, "");
   assert.equal(fact({ ...f, verified: true }, { mode: "production" }).value, "123");
+});
+
+test("donation links must be Stripe-hosted payment pages", async () => {
+  const { validateDonations } = await import("../src/lib/content.ts");
+  assert.deepEqual(validateDonations({ one_off_url: "https://donate.stripe.com/abc123" }).errors, []);
+  assert.match(validateDonations({ one_off_url: "https://evil.example/pay" }).errors.join(), /Stripe Payment Link/);
+  assert.match(validateDonations({ monthly_url: "https://buy.stripe.com/x1" }).errors.join(), /one_off_url is empty/);
+  assert.deepEqual(validateDonations(undefined).donations, { one_off_url: "", monthly_url: "", examples: [] });
 });

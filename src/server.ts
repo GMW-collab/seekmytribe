@@ -6,13 +6,15 @@ import { readFile, stat } from "node:fs/promises";
 import { join, normalize, extname, resolve, dirname, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { randomBytes } from "node:crypto";
+export { securityHeaders };
 import { loadContent } from "./lib/content.ts";
 import { buildForms } from "./forms/definitions.ts";
 import { handleSubmission, type HandlerDeps } from "./forms/handler.ts";
 import { makeToken, RateLimiter } from "./forms/spam.ts";
 import { createResendSender, mailConfigFromEnv, isMailConfigured, type Sender } from "./forms/mailer.ts";
 import { TOKEN_PLACEHOLDER } from "./templates/forms.ts";
-import { escapeHtml } from "./lib/html.ts";
+import { noScriptResult, noScriptTitle, sameSiteBack } from "./forms/responses.ts";
+import { securityHeaders } from "./lib/headers.ts";
 import type { RawFields } from "./forms/validate.ts";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -35,23 +37,6 @@ const MIME: Record<string, string> = {
   ".pdf": "application/pdf",
   ".ico": "image/x-icon",
 };
-
-export function securityHeaders(fontSource: "self" | "google", path = "/"): Record<string, string> {
-  const fontCss = fontSource === "google" ? " https://fonts.googleapis.com" : "";
-  const fontSrc = fontSource === "google" ? " https://fonts.gstatic.com" : "";
-  // The CMS at /admin/ loads its editor from unpkg and talks to GitHub, so it gets its own policy.
-  const csp = path.startsWith("/admin/")
-    ? "default-src 'self'; script-src 'self' 'unsafe-eval' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: blob: https:; connect-src 'self' https://api.github.com https://unpkg.com; frame-ancestors 'none'"
-    : `default-src 'self'; script-src 'self'; style-src 'self'${fontCss}; font-src 'self'${fontSrc}; img-src 'self' data:; connect-src 'self'; form-action 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'`;
-  return {
-    "Content-Security-Policy": csp,
-    "X-Content-Type-Options": "nosniff",
-    "Referrer-Policy": "strict-origin-when-cross-origin",
-    "Permissions-Policy": "camera=(), microphone=(), geolocation=(), interest-cohort=()",
-    "Cross-Origin-Opener-Policy": "same-origin",
-    "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
-  };
-}
 
 /** Resolve a URL path to a file inside dist, or null if it would escape it. */
 export function resolveStaticPath(distDir: string, urlPath: string): string | null {
@@ -95,23 +80,6 @@ function clientIp(req: IncomingMessage, trustProxy: boolean): string {
     if (first) return first;
   }
   return req.socket.remoteAddress ?? "unknown";
-}
-
-function noScriptResult(title: string, message: string, errors: Record<string, string> | undefined, backHref: string): string {
-  const list = errors ? `<ul>${Object.values(errors).map((e) => `<li>${escapeHtml(e)}</li>`).join("")}</ul>` : "";
-  return `<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>${escapeHtml(title)} | Seek My Tribe</title><link rel="stylesheet" href="/css/fonts.css"><link rel="stylesheet" href="/css/site.css"></head><body><main id="main" class="wrap section narrow"><h1>${escapeHtml(title)}</h1><p class="lede">${escapeHtml(message)}</p>${list}<p><a class="button" href="${escapeHtml(backHref)}">Go back to the form</a></p><p>If you use your browser's back button instead, your answers should still be there.</p></main></body></html>`;
-}
-
-/** Path of the page the form was posted from, if it was this site; otherwise the home page. */
-function sameSiteBack(req: IncomingMessage): string {
-  const ref = req.headers.referer;
-  if (!ref) return "/";
-  try {
-    const u = new URL(ref);
-    return u.host === req.headers.host ? u.pathname : "/";
-  } catch {
-    return "/";
-  }
 }
 
 export interface ServerOptions {
@@ -163,7 +131,7 @@ export function createSiteServer(opts: ServerOptions = {}) {
     };
     let body: Buffer | string = await readFile(file);
     if (ext === ".html") {
-      body = body.toString("utf8").replaceAll(TOKEN_PLACEHOLDER, makeToken(secret));
+      body = body.toString("utf8").replaceAll(TOKEN_PLACEHOLDER, await makeToken(secret));
       headers["Cache-Control"] = "no-store";
     } else if ([".woff2", ".png", ".jpg", ".webp", ".avif", ".svg"].includes(ext)) {
       headers["Cache-Control"] = "public, max-age=604800";
@@ -177,7 +145,7 @@ export function createSiteServer(opts: ServerOptions = {}) {
   async function notFound(res: ServerResponse) {
     const page = await readFile(join(distDir, "404.html"), "utf8").catch(() => "Not found");
     res.writeHead(404, { "Content-Type": "text/html; charset=utf-8", ...securityHeaders(fontSource) });
-    res.end(page.replaceAll(TOKEN_PLACEHOLDER, makeToken(secret)));
+    res.end(page.replaceAll(TOKEN_PLACEHOLDER, await makeToken(secret)));
   }
 
   return createServer(async (req, res) => {
@@ -212,7 +180,7 @@ export function createSiteServer(opts: ServerOptions = {}) {
           return res.end();
         }
         res.writeHead(result.status, { "Content-Type": "text/html; charset=utf-8", ...securityHeaders(fontSource) });
-        return res.end(noScriptResult(result.body.errors ? "Some answers need checking" : "Your form wasn't sent", result.body.message, result.body.errors, sameSiteBack(req)));
+        return res.end(noScriptResult(noScriptTitle(Boolean(result.body.errors)), result.body.message, result.body.errors, sameSiteBack(req.headers.referer, req.headers.host)));
       }
 
       if (req.method !== "GET" && req.method !== "HEAD") {

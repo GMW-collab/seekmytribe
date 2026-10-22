@@ -56,9 +56,35 @@ export interface Organisation {
   charity_status: Fact;
 }
 
+export interface DonationSettings {
+  one_off_url: string;
+  monthly_url: string;
+  examples: string[];
+}
+
 export interface SiteSettings {
   services: { email_provider: Fact; hosting_provider: Fact };
+  donations: DonationSettings;
   social: Array<{ name: string; url: string }>;
+}
+
+/** Only Stripe-hosted payment pages are accepted, so a typo can't send donors somewhere unsafe. */
+export const DONATION_URL_RE = /^https:\/\/(donate|buy)\.stripe\.com\/[A-Za-z0-9_-]+$/;
+
+export function validateDonations(d: Partial<DonationSettings> | undefined): { donations: DonationSettings; errors: string[] } {
+  const errors: string[] = [];
+  const donations: DonationSettings = {
+    one_off_url: str(d?.one_off_url),
+    monthly_url: str(d?.monthly_url),
+    examples: strList(d?.examples),
+  };
+  for (const key of ["one_off_url", "monthly_url"] as const) {
+    if (donations[key] && !DONATION_URL_RE.test(donations[key])) {
+      errors.push(`donations.${key} must be a Stripe Payment Link starting https://donate.stripe.com/ or https://buy.stripe.com/`);
+    }
+  }
+  if (donations.monthly_url && !donations.one_off_url) errors.push("donations.monthly_url is set but one_off_url is empty");
+  return { donations, errors };
 }
 
 export interface Category {
@@ -382,6 +408,9 @@ export function loadContent(root: string): SiteContent {
 
   const organisation = readYamlFile(join(root, "organisation.yml")) as Organisation;
   const settings = readYamlFile(join(root, "site.yml")) as SiteSettings;
+  const donationCheck = validateDonations(settings.donations);
+  settings.donations = donationCheck.donations;
+  donationCheck.errors.forEach((e) => problems.push(`content/site.yml: ${e}`));
   const categories = readYamlFile(join(root, "categories.yml")) as Category[];
 
   const activities: Activity[] = [];

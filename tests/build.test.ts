@@ -160,7 +160,7 @@ test("server: repeated fields become arrays", () => {
 });
 
 test("server: JSON form submission succeeds end to end", async () => {
-  const body = new URLSearchParams({ name: "Sam", email: "sam@example.org", topic: "general", message: "Hello", _t: makeToken("s3cret", Date.now() - 5000) });
+  const body = new URLSearchParams({ name: "Sam", email: "sam@example.org", topic: "general", message: "Hello", _t: await makeToken("s3cret", Date.now() - 5000) });
   const res = await fetch(`${base}/api/forms/contact`, { method: "POST", body, headers: { Accept: "application/json" } });
   assert.equal(res.status, 200);
   assert.deepEqual(await res.json(), { ok: true, message: (await import("../src/forms/definitions.ts")).buildForms([]).contact!.successMessage, redirect: "/thanks/contact/" });
@@ -168,11 +168,11 @@ test("server: JSON form submission succeeds end to end", async () => {
 });
 
 test("server: without JavaScript, success redirects and errors render a readable page", async () => {
-  const ok = new URLSearchParams({ email: "a@b.co", consent: "yes", _t: makeToken("s3cret", Date.now() - 5000) });
+  const ok = new URLSearchParams({ email: "a@b.co", consent: "yes", _t: await makeToken("s3cret", Date.now() - 5000) });
   const r1 = await fetch(`${base}/api/forms/updates`, { method: "POST", body: ok, redirect: "manual" });
   assert.equal(r1.status, 303);
   assert.equal(r1.headers.get("location"), "/thanks/updates/");
-  const bad = new URLSearchParams({ email: "nope", _t: makeToken("s3cret", Date.now() - 5000) });
+  const bad = new URLSearchParams({ email: "nope", _t: await makeToken("s3cret", Date.now() - 5000) });
   const r2 = await fetch(`${base}/api/forms/updates`, { method: "POST", body: bad });
   assert.equal(r2.status, 422);
   const html = await r2.text();
@@ -183,4 +183,32 @@ test("server: without JavaScript, success redirects and errors render a readable
 test("server: oversized submissions are refused", async () => {
   const res = await fetch(`${base}/api/forms/contact`, { method: "POST", body: "message=" + "x".repeat(40_000), headers: { Accept: "application/json" } });
   assert.equal(res.status, 413);
+});
+
+test("donate page: 'opens soon' until a Stripe link is set, then Give buttons and a header link", async () => {
+  const { mkdtempSync, cpSync, writeFileSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const closed = read(emptyDir, "/donate/");
+  assert.match(closed, /Online giving opens soon/);
+  assert.doesNotMatch(read(emptyDir, "/"), /site-nav__donate/);
+  assert.match(closed, /not a registered charity/i);
+
+  const dir = mkdtempSync(join(tmpdir(), "smt-donate-"));
+  cpSync(join(ROOT, "content"), dir, { recursive: true });
+  const site = readFileSync(join(dir, "site.yml"), "utf8").replace('one_off_url: ""', 'one_off_url: "https://donate.stripe.com/test_123"');
+  writeFileSync(join(dir, "site.yml"), site);
+  const out = tempDir("smt-donate-out-");
+  build({ mode: "preview", siteUrl: "https://example.org", fontSource: "self", contentDir: dir, outDir: out, builtAt: BUILT_AT, quiet: true, functionsDataDir: null });
+  const open = read(out, "/donate/");
+  assert.match(open, /href="https:\/\/donate\.stripe\.com\/test_123"[^>]*>Give once, any amount/);
+  assert.doesNotMatch(open, /Give monthly/);
+  assert.match(read(out, "/"), /site-nav__donate/);
+});
+
+test("no inline style attributes or inline scripts (the CSP would block them)", () => {
+  for (const p of pages) {
+    const html = read(previewDir, p.path);
+    assert.doesNotMatch(html, /\sstyle="/, `${p.path} has an inline style`);
+    assert.doesNotMatch(html, /<script(?![^>]*\ssrc=)(?![^>]*type="application\/ld\+json")[^>]*>/, `${p.path} has an inline script`);
+  }
 });

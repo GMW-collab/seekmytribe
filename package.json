@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "node src/build.ts",
+    "build:cloudflare": "node src/build.ts",
     "build:preview": "SITE_MODE=preview node src/build.ts",
     "build:production": "SITE_MODE=production node src/build.ts",
     "start": "node src/server.ts",
