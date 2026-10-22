@@ -1,0 +1,39 @@
+# Example only. Files ending in .example are never published.
+title: Sunday morning riverside walk
+summary: An easy-paced 90-minute walk, ending with an optional tea. Good for first-timers.
+description: |
+  We meet at the gate, say hello, and walk at the pace of the slowest walker.
+  Conversation is welcome but never expected. If you'd rather just walk, that's fine.
+category: walking-outdoors
+status: draft
+starts: 2026-11-15T10:00
+ends: 2026-11-15T11:30
+repeats: Every other Sunday
+area: Example area
+venue:
+  name: Example park, main gate
+  address: Example Road, Example Town
+  directions: Five minutes from the bus stop on Example Road. Step-free route from the station.
+cost:
+  type: free
+  details: Free. Tea afterwards is optional and you pay for your own.
+capacity: 15
+places_left:
+accessibility:
+  - Flat, paved path for the whole route
+  - Benches every 400 metres or so
+  - Accessible toilet in the café at the end
+  - Not yet checked for wheelchair access on the grass section
+# Tags used by the access filter. Only add a tag you have checked.
+# Options: step-free, accessible-toilet, seating, quiet, hearing-loop, bsl
+access_tags:
+  - accessible-toilet
+  - seating
+age: Adults 18+
+what_to_bring: Comfortable shoes and something for the weather.
+how_to_join: register-interest
+booking_url:
+organiser: Example organiser
+contact_email:
+cancellation: If we cancel, we will email everyone who registered by 8am on the day and update this page.
+guidance: Walk leaders carry a first aid kit and a phone.

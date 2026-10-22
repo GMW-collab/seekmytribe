@@ -1,0 +1,128 @@
+# Organisational facts used across the site.
+#
+# Every fact has:
+#   value     - what the site will display
+#   verified  - true only once someone has checked it against an official source
+#   source    - where it was checked (e.g. "Companies House, 3 Nov 2026")
+#   launch    - true if the production site must not go live without it
+#
+# Preview builds show unverified facts with a visible "to confirm" flag.
+# Production builds hide unverified facts, and refuse to build at all while any
+# fact marked launch: true is unverified.
+
+name:
+  value: Seek My Tribe
+  verified: true
+  source: Existing website at seekmytribe.com (checked 22 Oct 2026)
+  launch: true
+
+tagline:
+  value: Connect. Belong. Thrive.
+  verified: true
+  source: Existing website at seekmytribe.com (checked 22 Oct 2026)
+  launch: false
+
+legal_name:
+  value: Seek My Tribe CIC
+  verified: false
+  source: Assumed from the project brief. Not found on Companies House by this name on 22 Oct 2026.
+  launch: true
+
+legal_form:
+  value: a community interest company (CIC) limited by guarantee
+  verified: false
+  source: Project brief says CIC; company type (guarantee or shares) not yet confirmed.
+  launch: true
+
+jurisdiction:
+  value: England and Wales
+  verified: false
+  source: Assumed. Confirm on the certificate of incorporation.
+  launch: true
+
+company_number:
+  value: "00000000"
+  verified: false
+  source: Not yet supplied.
+  launch: true
+
+registered_office:
+  value: Registered office address to be confirmed
+  verified: false
+  source: Not yet supplied.
+  launch: true
+
+incorporated:
+  value: Date of incorporation to be confirmed
+  verified: false
+  source: Not yet supplied.
+  launch: false
+
+community_interest_statement:
+  value: >-
+    To help reduce loneliness and social isolation by creating welcoming
+    opportunities for people to meet, take part in shared activities and learn
+    from one another in the real world.
+  verified: false
+  source: Paraphrase of the project brief. Replace with the wording filed in the CIC 36 form.
+  launch: true
+
+asset_lock:
+  value: >-
+    As a CIC, Seek My Tribe is subject to an asset lock: its assets and any
+    surplus must be used for the benefit of the community it serves.
+  verified: false
+  source: Standard CIC requirement; confirm against the company's articles.
+  launch: false
+
+directors:
+  value:
+    - name: Director name to be confirmed
+      role: Director
+  verified: false
+  source: Not yet supplied. Check against the Companies House officer list.
+  launch: true
+
+area:
+  value: Our first area of activity will be announced soon
+  verified: false
+  source: Not yet decided.
+  launch: false
+
+email:
+  value: hello@seekmytribe.com
+  verified: false
+  source: Placeholder address. Confirm the mailbox exists and is monitored.
+  launch: true
+
+phone:
+  value: ""
+  verified: false
+  source: Optional. Add a phone number if someone can answer or return calls.
+  launch: false
+
+postal_address:
+  value: ""
+  verified: false
+  source: Optional. Add if post can be received.
+  launch: false
+
+safeguarding_lead:
+  value: Safeguarding lead to be named
+  verified: false
+  source: Must be appointed before any activity runs.
+  launch: true
+
+insurance:
+  value: Public liability insurance details to be confirmed
+  verified: false
+  source: Required before activities run. Confirm insurer and level of cover.
+  launch: false
+
+charity_status:
+  value: >-
+    Seek My Tribe is not a registered charity. Gifts to a CIC are not eligible for
+    Gift Aid, and we do not describe donations as tax-deductible.
+  verified: true
+  source: CICs cannot be registered charities (CIC Regulator guidance). Holds unless the organisation's form changes.
+  launch: false

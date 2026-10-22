@@ -1,0 +1,33 @@
+# Kinds of activity Seek My Tribe hopes to offer. These are possibilities,
+# not a claim that each one is running. The site only shows a category's
+# activities when real ones exist.
+- id: walking-outdoors
+  name: Walking and outdoors
+  description: Gentle walks, park clean-ups and time outside together.
+- id: shared-meals
+  name: Shared meals and conversation
+  description: Cooking, eating and talking around one table.
+- id: creative-making
+  name: Creative arts and making
+  description: Drawing, crafts, mending and making things with your hands.
+- id: learning-skills
+  name: Learning and skills
+  description: Sessions where people teach each other something useful.
+- id: reading-culture
+  name: Reading, discussion and culture
+  description: Book groups, film nights and visits to galleries and museums.
+- id: games
+  name: Games and play
+  description: Board games, quizzes and low-key recreation.
+- id: volunteering
+  name: Volunteering together
+  description: Doing something useful for the neighbourhood as a group.
+- id: intergenerational
+  name: Across generations
+  description: Activities that bring older and younger people together.
+- id: interest-meetups
+  name: Interest meetups
+  description: Small groups formed around a shared passion.
+- id: other
+  name: Something else
+  description: Locally suggested activities that don't fit elsewhere.

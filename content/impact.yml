@@ -1,0 +1,116 @@
+# What Seek My Tribe will measure, and how.
+#
+# kind:
+#   output  - things we count directly (activities run, people attending)
+#   outcome - changes participants tell us about (feeling more connected)
+#   impact  - longer-term change, only claimed with strong evidence
+#
+# results: add a result only when it is backed by records you keep.
+#   - period: "Jan-Mar 2027"
+#     value: "24"
+#     note: "Counted from sign-in sheets at each session"
+#
+# The Impact page shows "No results yet" for any measure without results.
+# Never add estimated, projected or illustrative numbers here.
+
+reporting_period_note: >-
+  We have not yet run activities, so there are no results to report. This page
+  sets out what we will measure from our first session onwards.
+
+measures:
+  - id: activities-delivered
+    name: Activities delivered
+    kind: output
+    definition: Number of sessions that took place, counted once each.
+    method: Session log kept by the organiser.
+    results: []
+
+  - id: unique-participants
+    name: People taking part
+    kind: output
+    definition: Number of different people attending at least once in the period.
+    method: Anonymised sign-in records. Names are not published.
+    results: []
+
+  - id: returning-participants
+    name: People coming back
+    kind: output
+    definition: Share of participants who attended two or more sessions in the period.
+    method: Calculated from anonymised sign-in records.
+    results: []
+
+  - id: reach
+    name: Where people come from
+    kind: output
+    definition: Number of different neighbourhoods (by postcode district) participants live in.
+    method: Optional postcode district asked at first visit. Full postcodes are not recorded.
+    results: []
+
+  - id: volunteers
+    name: Volunteer involvement
+    kind: output
+    definition: Number of volunteers and the hours they gave.
+    method: Volunteer log.
+    results: []
+
+  - id: partnerships
+    name: Community partnerships
+    kind: output
+    definition: Organisations actively working with us, such as venues or co-hosts, with a written agreement.
+    method: Partnership register.
+    results: []
+
+  - id: participant-ideas
+    name: Participant ideas put into action
+    kind: output
+    definition: Activities or changes that started from a participant's suggestion.
+    method: Suggestion log, recording what was adopted.
+    results: []
+
+  - id: belonging
+    name: Feeling of belonging
+    kind: outcome
+    definition: Share of participants who agree they feel welcome and part of the group.
+    method: Short optional feedback card after the third visit, using a five-point scale. Anonymous.
+    results: []
+
+  - id: new-connections
+    name: New connections
+    kind: outcome
+    definition: Share of participants who say they have met someone they would like to see again.
+    method: Same optional feedback card.
+    results: []
+
+  - id: loneliness-measure
+    name: Change in reported loneliness
+    kind: outcome
+    definition: >-
+      Change in participants' own rating of how often they feel lonely, using the
+      single direct question recommended by the Office for National Statistics.
+    method: >-
+      Optional, asked at first visit and again after three months. Anonymous and
+      only reported for groups large enough that no one can be identified.
+    results: []
+
+  - id: inclusion
+    name: Accessibility and inclusion
+    kind: outcome
+    definition: Share of participants who say nothing stopped them taking part fully, and what did when it did.
+    method: Optional feedback card, plus a record of access requests and how they were met.
+    results: []
+
+  - id: cost-per-participant
+    name: Cost per participant
+    kind: output
+    definition: Total direct delivery cost divided by number of people taking part.
+    method: Calculated from accounts once a full year of activity has run. Reported with its limitations.
+    results: []
+
+  - id: longer-term
+    name: Longer-term change in the community
+    kind: impact
+    definition: >-
+      Lasting friendships, groups that continue on their own, and stronger local
+      networks. We will only report this with independent or follow-up evidence.
+    method: To be designed with partners, possibly through an external evaluation.
+    results: []

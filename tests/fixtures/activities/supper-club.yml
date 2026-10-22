@@ -1,0 +1,19 @@
+# TEST FIXTURE ONLY. Never copied into the real content folder.
+title: Test supper
+summary: A second fixture activity used by automated tests.
+description: Fixture.
+category: shared-meals
+status: published
+starts: 2030-06-20T18:30
+area: Otherton
+venue:
+  name: Test hall
+cost:
+  type: paid
+  details: £5
+accessibility:
+  - Not yet checked
+how_to_join: register-interest
+organiser: Test organiser
+capacity: 12
+places_left: 4

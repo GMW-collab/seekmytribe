@@ -1,0 +1,764 @@
+# Decap CMS configuration. Generated from content/organisation.yml; see docs/HANDOVER.md.
+backend:
+  name: github
+  repo: GMW-collab/seekmytribe
+  branch: main
+  commit_messages:
+    create: Add {{collection}} “{{slug}}”
+    update: Update {{collection}} “{{slug}}”
+    delete: Remove {{collection}} “{{slug}}”
+publish_mode: editorial_workflow
+media_folder: public/images/uploads
+public_folder: /images/uploads
+site_url: https://seekmytribe.com
+locale: en
+collections:
+- name: activities
+  label: Activities
+  label_singular: Activity
+  folder: content/activities
+  extension: yml
+  format: yml
+  create: true
+  slug: '{{slug}}'
+  identifier_field: title
+  description: Only add activities that are really happening. Set status to “published” when ready.
+  summary: '{{title}} — {{starts}} ({{status}})'
+  fields:
+  - label: Title
+    name: title
+    widget: string
+  - label: Short summary
+    name: summary
+    widget: text
+  - label: Description
+    name: description
+    widget: markdown
+    buttons:
+    - bold
+    - italic
+    - link
+    - bulleted-list
+    editor_components: []
+  - label: Kind of activity
+    name: category
+    widget: select
+    options:
+    - label: Walking and outdoors
+      value: walking-outdoors
+    - label: Shared meals and conversation
+      value: shared-meals
+    - label: Creative arts and making
+      value: creative-making
+    - label: Learning and skills
+      value: learning-skills
+    - label: Reading, discussion and culture
+      value: reading-culture
+    - label: Games and play
+      value: games
+    - label: Volunteering together
+      value: volunteering
+    - label: Across generations
+      value: intergenerational
+    - label: Interest meetups
+      value: interest-meetups
+    - label: Something else
+      value: other
+  - label: Status
+    name: status
+    widget: select
+    default: draft
+    options:
+    - draft
+    - published
+    - full
+    - cancelled
+  - label: Starts
+    name: starts
+    widget: datetime
+    format: YYYY-MM-DDTHH:mm
+    date_format: D MMM YYYY
+    time_format: HH:mm
+    picker_utc: false
+  - label: Ends
+    name: ends
+    widget: datetime
+    format: YYYY-MM-DDTHH:mm
+    date_format: D MMM YYYY
+    time_format: HH:mm
+    picker_utc: false
+    required: false
+  - label: Repeats (plain words)
+    name: repeats
+    widget: string
+    required: false
+    hint: e.g. Every other Sunday
+  - label: Area
+    name: area
+    widget: string
+    hint: Neighbourhood or town
+  - label: Venue
+    name: venue
+    widget: object
+    fields:
+    - label: Name or meeting point
+      name: name
+      widget: string
+    - label: Address
+      name: address
+      widget: string
+      required: false
+    - label: Directions
+      name: directions
+      widget: text
+      required: false
+  - label: Cost
+    name: cost
+    widget: object
+    fields:
+    - label: Type
+      name: type
+      widget: select
+      options:
+      - free
+      - pay-what-you-can
+      - subsidised
+      - paid
+    - label: Details
+      name: details
+      widget: string
+      required: false
+  - label: Capacity (only if counted)
+    name: capacity
+    widget: number
+    value_type: int
+    required: false
+  - label: Places left (only if kept up to date)
+    name: places_left
+    widget: number
+    value_type: int
+    required: false
+  - label: Access information
+    name: accessibility
+    widget: list
+    field:
+      label: Line
+      name: line
+      widget: string
+    hint: Say “Not yet checked” rather than guess.
+  - label: Access filter tags (checked only)
+    name: access_tags
+    widget: select
+    multiple: true
+    required: false
+    options:
+    - step-free
+    - accessible-toilet
+    - seating
+    - quiet
+    - hearing-loop
+    - bsl
+  - label: Who it's for
+    name: age
+    widget: string
+    required: false
+  - label: What to bring
+    name: what_to_bring
+    widget: string
+    required: false
+  - label: How to join
+    name: how_to_join
+    widget: select
+    options:
+    - just-turn-up
+    - register-interest
+    - external-booking
+  - label: Booking link (https://)
+    name: booking_url
+    widget: string
+    required: false
+  - label: Organiser
+    name: organiser
+    widget: string
+  - label: Contact email
+    name: contact_email
+    widget: string
+    required: false
+  - label: If it's cancelled
+    name: cancellation
+    widget: string
+    required: false
+  - label: Safety or participation notes
+    name: guidance
+    widget: text
+    required: false
+- name: programmes
+  label: Programmes (for funders)
+  label_singular: Programme
+  folder: content/programmes
+  extension: md
+  format: frontmatter
+  create: true
+  slug: '{{slug}}'
+  description: “Draft” programmes are only visible in the review copy. Only mark “funded” once confirmed in writing.
+  fields:
+  - label: Title
+    name: title
+    widget: string
+  - label: Status
+    name: status
+    widget: select
+    default: draft
+    options:
+    - draft
+    - proposed
+    - funded
+    - running
+    - complete
+  - label: Summary
+    name: summary
+    widget: text
+  - label: The problem
+    name: problem
+    widget: text
+  - label: Who it's for
+    name: participants
+    widget: text
+  - label: What we'll do
+    name: activities
+    widget: list
+  - label: Outputs
+    name: outputs
+    widget: list
+  - label: Outcomes
+    name: outcomes
+    widget: list
+  - label: Delivery plan
+    name: delivery
+    widget: text
+    required: false
+  - label: Evaluation
+    name: evaluation
+    widget: text
+    required: false
+  - label: Indicative budget
+    name: budget
+    widget: text
+    required: false
+  - label: Funding sought
+    name: funding_sought
+    widget: string
+    required: false
+  - label: Area
+    name: area
+    widget: string
+    required: false
+  - label: Confirmed partners
+    name: partners
+    widget: list
+    required: false
+  - label: Confirmed funders
+    name: funders
+    widget: list
+    required: false
+  - label: Notes
+    name: body
+    widget: markdown
+    required: false
+- name: articles
+  label: Guides and resources
+  label_singular: Guide
+  folder: content/articles
+  extension: md
+  format: frontmatter
+  create: true
+  slug: '{{slug}}'
+  description: Participant stories need written consent. Never present illustrative stories as real people.
+  fields:
+  - label: Title
+    name: title
+    widget: string
+  - label: Summary
+    name: summary
+    widget: text
+  - label: Audience
+    name: audience
+    widget: select
+    options:
+    - participants
+    - hosts
+  - label: Published
+    name: published
+    widget: datetime
+    format: YYYY-MM-DD
+    time_format: false
+  - label: Body
+    name: body
+    widget: markdown
+- name: policies
+  label: Policies
+  label_singular: Policy
+  folder: content/policies
+  extension: md
+  format: frontmatter
+  create: false
+  fields:
+  - label: Title
+    name: title
+    widget: string
+  - label: Summary
+    name: summary
+    widget: text
+  - label: Review note (review copy only)
+    name: review_note
+    widget: text
+    required: false
+  - label: Last updated
+    name: updated
+    widget: datetime
+    format: YYYY-MM-DD
+    time_format: false
+  - label: Body
+    name: body
+    widget: markdown
+    hint: Words in {{double braces}} are filled in automatically.
+- name: settings
+  label: Organisation and settings
+  files:
+  - name: organisation
+    label: Organisation facts
+    file: content/organisation.yml
+    description: Tick “checked” only after confirming against Companies House or another official record.
+    fields:
+    - label: Name
+      name: name
+      widget: object
+      collapsed: true
+      fields:
+      - label: Value
+        name: value
+        widget: string
+        required: false
+      - label: Checked against an official source
+        name: verified
+        widget: boolean
+        default: false
+      - label: Where it was checked
+        name: source
+        widget: string
+        required: false
+      - label: Required before launch
+        name: launch
+        widget: boolean
+        default: false
+    - label: Tagline
+      name: tagline
+      widget: object
+      collapsed: true
+      fields:
+      - label: Value
+        name: value
+        widget: string
+        required: false
+      - label: Checked against an official source
+        name: verified
+        widget: boolean
+        default: false
+      - label: Where it was checked
+        name: source
+        widget: string
+        required: false
+      - label: Required before launch
+        name: launch
+        widget: boolean
+        default: false
+    - label: Legal name
+      name: legal_name
+      widget: object
+      collapsed: true
+      fields:
+      - label: Value
+        name: value
+        widget: string
+        required: false
+      - label: Checked against an official source
+        name: verified
+        widget: boolean
+        default: false
+      - label: Where it was checked
+        name: source
+        widget: string
+        required: false
+      - label: Required before launch
+        name: launch
+        widget: boolean
+        default: false
+    - label: Legal form
+      name: legal_form
+      widget: object
+      collapsed: true
+      fields:
+      - label: Value
+        name: value
+        widget: string
+        required: false
+      - label: Checked against an official source
+        name: verified
+        widget: boolean
+        default: false
+      - label: Where it was checked
+        name: source
+        widget: string
+        required: false
+      - label: Required before launch
+        name: launch
+        widget: boolean
+        default: false
+    - label: Jurisdiction
+      name: jurisdiction
+      widget: object
+      collapsed: true
+      fields:
+      - label: Value
+        name: value
+        widget: string
+        required: false
+      - label: Checked against an official source
+        name: verified
+        widget: boolean
+        default: false
+      - label: Where it was checked
+        name: source
+        widget: string
+        required: false
+      - label: Required before launch
+        name: launch
+        widget: boolean
+        default: false
+    - label: Company number
+      name: company_number
+      widget: object
+      collapsed: true
+      fields:
+      - label: Value
+        name: value
+        widget: string
+        required: false
+      - label: Checked against an official source
+        name: verified
+        widget: boolean
+        default: false
+      - label: Where it was checked
+        name: source
+        widget: string
+        required: false
+      - label: Required before launch
+        name: launch
+        widget: boolean
+        default: false
+    - label: Registered office
+      name: registered_office
+      widget: object
+      collapsed: true
+      fields:
+      - label: Value
+        name: value
+        widget: string
+        required: false
+      - label: Checked against an official source
+        name: verified
+        widget: boolean
+        default: false
+      - label: Where it was checked
+        name: source
+        widget: string
+        required: false
+      - label: Required before launch
+        name: launch
+        widget: boolean
+        default: false
+    - label: Incorporated
+      name: incorporated
+      widget: object
+      collapsed: true
+      fields:
+      - label: Value
+        name: value
+        widget: string
+        required: false
+      - label: Checked against an official source
+        name: verified
+        widget: boolean
+        default: false
+      - label: Where it was checked
+        name: source
+        widget: string
+        required: false
+      - label: Required before launch
+        name: launch
+        widget: boolean
+        default: false
+    - label: Community interest statement
+      name: community_interest_statement
+      widget: object
+      collapsed: true
+      fields:
+      - label: Value
+        name: value
+        widget: text
+        required: false
+      - label: Checked against an official source
+        name: verified
+        widget: boolean
+        default: false
+      - label: Where it was checked
+        name: source
+        widget: string
+        required: false
+      - label: Required before launch
+        name: launch
+        widget: boolean
+        default: false
+    - label: Asset lock
+      name: asset_lock
+      widget: object
+      collapsed: true
+      fields:
+      - label: Value
+        name: value
+        widget: text
+        required: false
+      - label: Checked against an official source
+        name: verified
+        widget: boolean
+        default: false
+      - label: Where it was checked
+        name: source
+        widget: string
+        required: false
+      - label: Required before launch
+        name: launch
+        widget: boolean
+        default: false
+    - label: Directors
+      name: directors
+      widget: object
+      collapsed: true
+      fields:
+      - label: Directors
+        name: value
+        widget: list
+        fields:
+        - label: Name
+          name: name
+          widget: string
+        - label: Role
+          name: role
+          widget: string
+          default: Director
+      - label: Checked against Companies House
+        name: verified
+        widget: boolean
+        default: false
+      - label: Where it was checked
+        name: source
+        widget: string
+        required: false
+      - label: Required before launch
+        name: launch
+        widget: boolean
+        default: true
+    - label: Area
+      name: area
+      widget: object
+      collapsed: true
+      fields:
+      - label: Value
+        name: value
+        widget: string
+        required: false
+      - label: Checked against an official source
+        name: verified
+        widget: boolean
+        default: false
+      - label: Where it was checked
+        name: source
+        widget: string
+        required: false
+      - label: Required before launch
+        name: launch
+        widget: boolean
+        default: false
+    - label: Email
+      name: email
+      widget: object
+      collapsed: true
+      fields:
+      - label: Value
+        name: value
+        widget: string
+        required: false
+      - label: Checked against an official source
+        name: verified
+        widget: boolean
+        default: false
+      - label: Where it was checked
+        name: source
+        widget: string
+        required: false
+      - label: Required before launch
+        name: launch
+        widget: boolean
+        default: false
+    - label: Phone
+      name: phone
+      widget: object
+      collapsed: true
+      fields:
+      - label: Value
+        name: value
+        widget: string
+        required: false
+      - label: Checked against an official source
+        name: verified
+        widget: boolean
+        default: false
+      - label: Where it was checked
+        name: source
+        widget: string
+        required: false
+      - label: Required before launch
+        name: launch
+        widget: boolean
+        default: false
+    - label: Postal address
+      name: postal_address
+      widget: object
+      collapsed: true
+      fields:
+      - label: Value
+        name: value
+        widget: string
+        required: false
+      - label: Checked against an official source
+        name: verified
+        widget: boolean
+        default: false
+      - label: Where it was checked
+        name: source
+        widget: string
+        required: false
+      - label: Required before launch
+        name: launch
+        widget: boolean
+        default: false
+    - label: Safeguarding lead
+      name: safeguarding_lead
+      widget: object
+      collapsed: true
+      fields:
+      - label: Value
+        name: value
+        widget: string
+        required: false
+      - label: Checked against an official source
+        name: verified
+        widget: boolean
+        default: false
+      - label: Where it was checked
+        name: source
+        widget: string
+        required: false
+      - label: Required before launch
+        name: launch
+        widget: boolean
+        default: false
+    - label: Insurance
+      name: insurance
+      widget: object
+      collapsed: true
+      fields:
+      - label: Value
+        name: value
+        widget: string
+        required: false
+      - label: Checked against an official source
+        name: verified
+        widget: boolean
+        default: false
+      - label: Where it was checked
+        name: source
+        widget: string
+        required: false
+      - label: Required before launch
+        name: launch
+        widget: boolean
+        default: false
+    - label: Charity status
+      name: charity_status
+      widget: object
+      collapsed: true
+      fields:
+      - label: Value
+        name: value
+        widget: text
+        required: false
+      - label: Checked against an official source
+        name: verified
+        widget: boolean
+        default: false
+      - label: Where it was checked
+        name: source
+        widget: string
+        required: false
+      - label: Required before launch
+        name: launch
+        widget: boolean
+        default: false
+  - name: impact
+    label: Impact measures and results
+    file: content/impact.yml
+    description: Add a result only when it is backed by records you keep. Never estimates.
+    fields:
+    - label: Note shown when there are no results
+      name: reporting_period_note
+      widget: text
+    - label: Measures
+      name: measures
+      widget: list
+      summary: '{{fields.name}} ({{fields.kind}})'
+      fields:
+      - label: ID
+        name: id
+        widget: string
+      - label: Name
+        name: name
+        widget: string
+      - label: Kind
+        name: kind
+        widget: select
+        options:
+        - output
+        - outcome
+        - impact
+      - label: Definition
+        name: definition
+        widget: text
+      - label: How it's collected
+        name: method
+        widget: text
+      - label: Results
+        name: results
+        widget: list
+        required: false
+        fields:
+        - label: Period
+          name: period
+          widget: string
+        - label: Value
+          name: value
+          widget: string
+        - label: Note
+          name: note
+          widget: string
+          required: false

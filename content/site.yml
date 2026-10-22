@@ -1,0 +1,24 @@
+# Site-wide settings that staff may need to change.
+
+# Services the site depends on. Used in the privacy notice.
+# Mark verified: true once the account exists and a data processing agreement is in place.
+services:
+  email_provider:
+    value: Resend (resend.com)
+    verified: false
+    source: Suggested in the build. Not yet set up.
+    launch: true
+  hosting_provider:
+    value: Website host to be confirmed
+    verified: false
+    source: Not yet chosen. See docs/HANDOVER.md for options.
+    launch: true
+
+# Social links appear in the footer only when a URL is filled in.
+social:
+  - name: Instagram
+    url: ""
+  - name: Facebook
+    url: ""
+  - name: LinkedIn
+    url: ""

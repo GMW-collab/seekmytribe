@@ -1,0 +1,19 @@
+# TEST FIXTURE ONLY. Never copied into the real content folder.
+title: Test walk
+summary: A fixture activity used by automated tests.
+description: Fixture.
+category: walking-outdoors
+status: published
+starts: 2030-06-02T10:00
+ends: 2030-06-02T11:30
+area: Testville
+venue:
+  name: Test park gate
+cost:
+  type: free
+accessibility:
+  - Not yet checked
+access_tags:
+  - step-free
+how_to_join: just-turn-up
+organiser: Test organiser
