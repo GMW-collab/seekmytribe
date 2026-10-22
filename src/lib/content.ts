@@ -10,13 +10,17 @@ import { ACCESS_TAGS } from "../../public/js/activity-filter.js";
 
 const require = createRequire(import.meta.url);
 const yaml = require("js-yaml") as {
-  load: (s: string, o?: unknown) => unknown;
-  safeLoad?: (s: string) => unknown;
+  load: (s: string, o?: { schema?: unknown }) => unknown;
+  DEFAULT_SAFE_SCHEMA?: unknown;
+  DEFAULT_SCHEMA?: unknown;
 };
 
 export function parseYaml(text: string): unknown {
-  // js-yaml 3 exposes safeLoad; js-yaml 4 made load() safe by default.
-  return yaml.safeLoad ? yaml.safeLoad(text) : yaml.load(text);
+  // Always parse with the safe schema. js-yaml 3 calls it DEFAULT_SAFE_SCHEMA;
+  // in js-yaml 4 that name is gone and DEFAULT_SCHEMA is safe. (safeLoad exists
+  // in js-yaml 4 only as a function that throws, so it must not be called.)
+  const schema = yaml.DEFAULT_SAFE_SCHEMA ?? yaml.DEFAULT_SCHEMA;
+  return yaml.load(text, schema ? { schema } : undefined);
 }
 
 export class ContentError extends Error {}

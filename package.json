@@ -21,7 +21,7 @@
     "fonts": "sh scripts/fetch-fonts.sh"
   },
   "dependencies": {
-    "js-yaml": ">=3.14.0 <5",
+    "js-yaml": "^4.1.0",
     "marked": "^18.0.0"
   },
   "devDependencies": {
