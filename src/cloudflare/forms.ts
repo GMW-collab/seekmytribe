@@ -1,4 +1,4 @@
-// Cloudflare Pages adapter. The thin files in /functions call these.
+// Cloudflare adapter used by the Worker in src/cloudflare/worker.ts.
 // Everything here uses standard Request/Response so it can be tested in Node.
 
 import type { FormDef } from "../forms/definitions.ts";
@@ -9,13 +9,13 @@ import { noScriptResult, noScriptTitle, sameSiteBack } from "../forms/responses.
 import { TOKEN_PLACEHOLDER } from "../templates/forms.ts";
 import type { RawFields } from "../forms/validate.ts";
 
-/** Written by the build into functions/_generated/site.json. */
+/** Written by the build into src/cloudflare/_generated/site.json. */
 export interface SiteData {
   forms: Record<string, FormDef>;
   contactEmail: string;
 }
 
-/** Variables and secrets set in the Cloudflare Pages dashboard. */
+/** Variables and secrets set in the Cloudflare dashboard (Settings > Variables & Secrets). */
 export interface PagesEnv {
   FORM_SECRET?: string;
   RESEND_API_KEY?: string;

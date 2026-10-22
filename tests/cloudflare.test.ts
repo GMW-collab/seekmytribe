@@ -1,8 +1,9 @@
-// Tests the Cloudflare Pages adapter with standard Request/Response objects.
+// Tests the Cloudflare Worker and its form adapter with standard Request/Response objects.
 // (Cloudflare itself can't run here; see docs/HANDOVER.md for the first-deploy checks.)
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { onFormPost, injectFormTokens, type SiteData } from "../src/cloudflare/pages.ts";
+import { onFormPost, injectFormTokens, type SiteData } from "../src/cloudflare/forms.ts";
+import { handleRequest } from "../src/cloudflare/worker.ts";
 import { buildForms } from "../src/forms/definitions.ts";
 import { makeToken } from "../src/forms/spam.ts";
 import type { OutgoingEmail } from "../src/forms/mailer.ts";
@@ -59,9 +60,50 @@ test("cloudflare: main builds production, other branches build review copies", (
   assert.equal(resolveMode({ CF_PAGES: "1", CF_PAGES_BRANCH: "redesign" }), "preview");
   assert.equal(resolveMode({ CF_PAGES: "1", CF_PAGES_BRANCH: "main", SITE_MODE: "preview" }), "preview");
   assert.equal(resolveMode({}), "preview");
+  assert.equal(resolveMode({ WORKERS_CI: "1", WORKERS_CI_BRANCH: "main" }), "preview");
+  assert.equal(resolveMode({ WORKERS_CI: "1", SITE_MODE: "production" }), "production");
 });
 
 test("cloudflare: _headers file gives /admin/ its own CSP instead of two", () => {
   const file = cloudflareHeadersFile("self");
   assert.match(file, /\/admin\/\*\n {2}! Content-Security-Policy\n {2}Content-Security-Policy: .*unpkg/);
+});
+
+// A stand-in for Cloudflare's static assets binding.
+const assets = {
+  fetch: async (req: Request) => {
+    const path = new URL(req.url).pathname;
+    if (path === "/") return new Response('<form><input name="_t" value="__FORM_TOKEN__"></form>', { headers: { "Content-Type": "text/html; charset=utf-8" } });
+    if (path === "/css/site.css") return new Response("body{}", { headers: { "Content-Type": "text/css" } });
+    return new Response("not found page", { status: 404, headers: { "Content-Type": "text/html; charset=utf-8" } });
+  },
+};
+const workerEnv = { ...env, ASSETS: assets };
+
+test("worker: pages get tokens and security headers; assets pass through with headers", async () => {
+  const home = await handleRequest(new Request("https://seekmytribe.com/"), workerEnv, site);
+  assert.equal(home.status, 200);
+  assert.match(await home.text(), /value="\d+\.[\w-]+"/);
+  assert.match(home.headers.get("Content-Security-Policy") ?? "", /default-src 'self'/);
+  const css = await handleRequest(new Request("https://seekmytribe.com/css/site.css"), workerEnv, site);
+  assert.equal(await css.text(), "body{}");
+  assert.equal(css.headers.get("X-Content-Type-Options"), "nosniff");
+  const missing = await handleRequest(new Request("https://seekmytribe.com/nope/"), workerEnv, site);
+  assert.equal(missing.status, 404);
+});
+
+test("worker: routes form posts, refuses other methods, reports health", async () => {
+  const body = new URLSearchParams({ email: "nope", _t: await makeToken("cf-secret", Date.now() - 5000) });
+  const post = await handleRequest(new Request("https://seekmytribe.com/api/forms/updates", { method: "POST", body, headers: { Accept: "application/json" } }), workerEnv, site);
+  assert.equal(post.status, 422);
+  const get = await handleRequest(new Request("https://seekmytribe.com/api/forms/updates"), workerEnv, site);
+  assert.equal(get.status, 405);
+  const health = await handleRequest(new Request("https://seekmytribe.com/healthz"), workerEnv, site);
+  assert.deepEqual(await health.json(), { ok: true, forms: "on", email: "not-configured" });
+});
+
+test("worker: /admin/ gets its own policy, not the site's", async () => {
+  const res = await handleRequest(new Request("https://seekmytribe.com/admin/"), workerEnv, site);
+  assert.match(res.headers.get("Content-Security-Policy") ?? "", /unpkg\.com/);
+  assert.equal(res.headers.get("X-Robots-Tag"), "noindex");
 });

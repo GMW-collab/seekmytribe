@@ -6,4 +6,4 @@ dist/
 *.log
 .DS_Store
 qa-output/
-functions/_generated/
+src/cloudflare/_generated/

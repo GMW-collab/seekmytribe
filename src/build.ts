@@ -23,7 +23,7 @@ export interface BuildOptions {
   fontSource: "self" | "google";
   contentDir?: string;
   outDir?: string;
-  /** Where to write the data the Cloudflare form Function imports. Set to null to skip. */
+  /** Where to write the data the Cloudflare Worker imports. Set to null to skip. */
   functionsDataDir?: string | null;
   builtAt?: Date;
   quiet?: boolean;
@@ -128,8 +128,8 @@ export function build(opts: BuildOptions): { pages: Page[]; outDir: string } {
   writeFileSync(join(outDir, "robots.txt"), robots(ctx));
   writeFileSync(join(outDir, "_headers"), cloudflareHeadersFile(ctx.fontSource));
 
-  // Data for the Cloudflare Pages form Function (functions/api/forms/[form].ts).
-  const functionsDataDir = opts.functionsDataDir === undefined ? join(ROOT, "functions", "_generated") : opts.functionsDataDir;
+  // Data for the Cloudflare Worker (src/cloudflare/worker.ts).
+  const functionsDataDir = opts.functionsDataDir === undefined ? join(ROOT, "src", "cloudflare", "_generated") : opts.functionsDataDir;
   if (functionsDataDir) {
     mkdirSync(functionsDataDir, { recursive: true });
     writeFileSync(join(functionsDataDir, "site.json"), JSON.stringify({ forms: ctx.forms, contactEmail: content.organisation.email.value }, null, 1));
@@ -148,8 +148,10 @@ export function build(opts: BuildOptions): { pages: Page[]; outDir: string } {
 
 // Run when called directly: node src/build.ts
 /**
- * Decide the mode. SITE_MODE wins if set. On Cloudflare Pages, the "main" branch
- * builds the public site and every other branch builds a review copy.
+ * Decide the mode. SITE_MODE wins if set. On Cloudflare Workers Builds, the site
+ * builds as a review copy until SITE_MODE=production is added as a build
+ * variable (do that once the launch facts are verified). On Cloudflare Pages,
+ * the "main" branch builds the public site and other branches build review copies.
  */
 export function resolveMode(env: NodeJS.ProcessEnv): SiteMode {
   if (env.SITE_MODE === "production" || env.SITE_MODE === "preview") return env.SITE_MODE;

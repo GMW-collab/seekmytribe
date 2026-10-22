@@ -1,0 +1,569 @@
+{
+ "forms": {
+  "contact": {
+   "id": "contact",
+   "title": "Send us a message",
+   "submitLabel": "Send message",
+   "subject": "Website message",
+   "replyTo": "email",
+   "successTitle": "Message sent",
+   "successMessage": "Thanks for getting in touch. We'll reply by email, usually within a few working days.",
+   "fields": [
+    {
+     "name": "name",
+     "label": "Your name",
+     "type": "text",
+     "required": true,
+     "maxLength": 100,
+     "autocomplete": "name"
+    },
+    {
+     "name": "email",
+     "label": "Email address",
+     "type": "email",
+     "required": true,
+     "maxLength": 200,
+     "autocomplete": "email"
+    },
+    {
+     "name": "phone",
+     "label": "Phone number (optional)",
+     "type": "tel",
+     "maxLength": 40,
+     "autocomplete": "tel",
+     "help": "Only if you'd prefer a call back."
+    },
+    {
+     "name": "topic",
+     "label": "What is it about?",
+     "type": "select",
+     "required": true,
+     "requiredMessage": "Choose what your message is about.",
+     "options": [
+      {
+       "value": "general",
+       "label": "A general question"
+      },
+      {
+       "value": "activity",
+       "label": "A question about an activity"
+      },
+      {
+       "value": "access",
+       "label": "Accessibility or an adjustment"
+      },
+      {
+       "value": "partnership",
+       "label": "Partnership or funding"
+      },
+      {
+       "value": "feedback",
+       "label": "Feedback or a complaint"
+      },
+      {
+       "value": "other",
+       "label": "Something else"
+      }
+     ]
+    },
+    {
+     "name": "message",
+     "label": "Your message",
+     "type": "textarea",
+     "required": true,
+     "maxLength": 3000
+    },
+    {
+     "name": "activity",
+     "label": "About activity",
+     "type": "hidden",
+     "maxLength": 120
+    }
+   ]
+  },
+  "join": {
+   "id": "join",
+   "title": "Let us know you're coming",
+   "submitLabel": "Let the host know I'm coming",
+   "subject": "Coming to an activity",
+   "replyTo": "email",
+   "successTitle": "The host knows you're coming",
+   "successMessage": "Thank you. We've passed your name to the host, who'll look out for you. If anything changes, we'll email you. If you can't make it after all, just reply to let us know — no explanation needed.",
+   "fields": [
+    {
+     "name": "name",
+     "label": "Your name",
+     "type": "text",
+     "required": true,
+     "maxLength": 100,
+     "autocomplete": "name"
+    },
+    {
+     "name": "email",
+     "label": "Email address",
+     "type": "email",
+     "required": true,
+     "maxLength": 200,
+     "autocomplete": "email"
+    },
+    {
+     "name": "phone",
+     "label": "Phone number (optional)",
+     "type": "tel",
+     "maxLength": 40,
+     "autocomplete": "tel",
+     "help": "Only if you'd like a text or call if the activity is cancelled at short notice."
+    },
+    {
+     "name": "notes",
+     "label": "Anything the host should know? (optional)",
+     "type": "textarea",
+     "maxLength": 1000,
+     "help": "For example, if it's your first time or you'd like help finding the group. Please don't include health details unless you need an adjustment."
+    },
+    {
+     "name": "activity",
+     "label": "Activity",
+     "type": "hidden",
+     "maxLength": 120
+    }
+   ]
+  },
+  "interest": {
+   "id": "interest",
+   "title": "Register your interest",
+   "submitLabel": "Register interest",
+   "subject": "Registered interest",
+   "replyTo": "email",
+   "successTitle": "You're on the list",
+   "successMessage": "Thank you. We'll email you when there's an activity that matches what you told us. You can ask us to remove you at any time.",
+   "fields": [
+    {
+     "name": "name",
+     "label": "Your name",
+     "type": "text",
+     "required": true,
+     "maxLength": 100,
+     "autocomplete": "name"
+    },
+    {
+     "name": "email",
+     "label": "Email address",
+     "type": "email",
+     "required": true,
+     "maxLength": 200,
+     "autocomplete": "email"
+    },
+    {
+     "name": "area",
+     "label": "Your area",
+     "type": "text",
+     "required": true,
+     "maxLength": 100,
+     "autocomplete": "address-level2",
+     "help": "A town, neighbourhood or postcode district such as E8. Not your full address."
+    },
+    {
+     "name": "interests",
+     "label": "What would you enjoy?",
+     "type": "checkboxes",
+     "options": [
+      {
+       "value": "walking-outdoors",
+       "label": "Walking and outdoors"
+      },
+      {
+       "value": "shared-meals",
+       "label": "Shared meals and conversation"
+      },
+      {
+       "value": "creative-making",
+       "label": "Creative arts and making"
+      },
+      {
+       "value": "learning-skills",
+       "label": "Learning and skills"
+      },
+      {
+       "value": "reading-culture",
+       "label": "Reading, discussion and culture"
+      },
+      {
+       "value": "games",
+       "label": "Games and play"
+      },
+      {
+       "value": "volunteering",
+       "label": "Volunteering together"
+      },
+      {
+       "value": "intergenerational",
+       "label": "Across generations"
+      },
+      {
+       "value": "interest-meetups",
+       "label": "Interest meetups"
+      },
+      {
+       "value": "other",
+       "label": "Something else"
+      }
+     ],
+     "help": "Choose any that appeal. You can leave this blank."
+    },
+    {
+     "name": "times",
+     "label": "When could you usually come?",
+     "type": "checkboxes",
+     "options": [
+      {
+       "value": "weekday-day",
+       "label": "Weekday daytimes"
+      },
+      {
+       "value": "weekday-evening",
+       "label": "Weekday evenings"
+      },
+      {
+       "value": "weekend",
+       "label": "Weekends"
+      }
+     ]
+    },
+    {
+     "name": "consent",
+     "label": "I'm happy for Seek My Tribe to email me about activities that match my interests.",
+     "type": "consent",
+     "required": true
+    }
+   ]
+  },
+  "suggest": {
+   "id": "suggest",
+   "title": "Suggest an activity",
+   "submitLabel": "Send suggestion",
+   "subject": "Activity suggestion",
+   "replyTo": "email",
+   "successTitle": "Suggestion received",
+   "successMessage": "Thank you. We read every suggestion and use them to decide what to run. We can't run every idea, but ideas that come up often, or that someone offers to help with, move up the list.",
+   "fields": [
+    {
+     "name": "idea",
+     "label": "What's your idea?",
+     "type": "textarea",
+     "required": true,
+     "maxLength": 1500,
+     "requiredMessage": "Describe your idea.",
+     "help": "A sentence or two is plenty. For example, a weekly chess club in the library."
+    },
+    {
+     "name": "category",
+     "label": "What kind of activity is it?",
+     "type": "select",
+     "options": [
+      {
+       "value": "",
+       "label": "Not sure"
+      },
+      {
+       "value": "walking-outdoors",
+       "label": "Walking and outdoors"
+      },
+      {
+       "value": "shared-meals",
+       "label": "Shared meals and conversation"
+      },
+      {
+       "value": "creative-making",
+       "label": "Creative arts and making"
+      },
+      {
+       "value": "learning-skills",
+       "label": "Learning and skills"
+      },
+      {
+       "value": "reading-culture",
+       "label": "Reading, discussion and culture"
+      },
+      {
+       "value": "games",
+       "label": "Games and play"
+      },
+      {
+       "value": "volunteering",
+       "label": "Volunteering together"
+      },
+      {
+       "value": "intergenerational",
+       "label": "Across generations"
+      },
+      {
+       "value": "interest-meetups",
+       "label": "Interest meetups"
+      },
+      {
+       "value": "other",
+       "label": "Something else"
+      }
+     ]
+    },
+    {
+     "name": "area",
+     "label": "Where would it happen?",
+     "type": "text",
+     "required": true,
+     "maxLength": 100,
+     "requiredMessage": "Enter where it would happen.",
+     "help": "A town or neighbourhood."
+    },
+    {
+     "name": "who",
+     "label": "Who do you think it would be good for? (optional)",
+     "type": "textarea",
+     "maxLength": 600
+    },
+    {
+     "name": "help",
+     "label": "Would you like to help make it happen?",
+     "type": "radio",
+     "required": true,
+     "requiredMessage": "Choose whether you'd like to help.",
+     "options": [
+      {
+       "value": "no",
+       "label": "No, it's just an idea"
+      },
+      {
+       "value": "maybe",
+       "label": "Maybe, I'd like to hear more"
+      },
+      {
+       "value": "host",
+       "label": "Yes, I'd be interested in hosting or helping run it"
+      }
+     ]
+    },
+    {
+     "name": "name",
+     "label": "Your name (optional)",
+     "type": "text",
+     "required": false,
+     "maxLength": 100,
+     "autocomplete": "name"
+    },
+    {
+     "name": "email",
+     "label": "Email address (optional)",
+     "type": "email",
+     "required": false,
+     "maxLength": 200,
+     "autocomplete": "email",
+     "help": "Only if you'd like us to reply."
+    },
+    {
+     "name": "consent_contact",
+     "label": "You can email me about this suggestion.",
+     "type": "consent",
+     "requiredIf": "email"
+    }
+   ]
+  },
+  "volunteer": {
+   "id": "volunteer",
+   "title": "Offer to help",
+   "submitLabel": "Send offer of help",
+   "subject": "Volunteer offer",
+   "replyTo": "email",
+   "successTitle": "Thank you for offering to help",
+   "successMessage": "We'll be in touch by email to talk about what might suit you. Volunteer roles depend on the activities we're running, so it may take a little while.",
+   "fields": [
+    {
+     "name": "name",
+     "label": "Your name",
+     "type": "text",
+     "required": true,
+     "maxLength": 100,
+     "autocomplete": "name"
+    },
+    {
+     "name": "email",
+     "label": "Email address",
+     "type": "email",
+     "required": true,
+     "maxLength": 200,
+     "autocomplete": "email"
+    },
+    {
+     "name": "ways",
+     "label": "How would you like to help?",
+     "type": "checkboxes",
+     "required": true,
+     "requiredMessage": "Choose at least one way you'd like to help.",
+     "options": [
+      {
+       "value": "activities",
+       "label": "Helping at activities"
+      },
+      {
+       "value": "hosting",
+       "label": "Hosting or leading a group"
+      },
+      {
+       "value": "skill",
+       "label": "Sharing a skill or running a session"
+      },
+      {
+       "value": "venue",
+       "label": "Offering a venue or space"
+      },
+      {
+       "value": "outreach",
+       "label": "Spreading the word locally"
+      },
+      {
+       "value": "organisation",
+       "label": "Behind the scenes: admin, design, finance, funding bids"
+      }
+     ]
+    },
+    {
+     "name": "area",
+     "label": "Your area",
+     "type": "text",
+     "required": true,
+     "maxLength": 100,
+     "autocomplete": "address-level2"
+    },
+    {
+     "name": "availability",
+     "label": "When are you usually free? (optional)",
+     "type": "text",
+     "maxLength": 200
+    },
+    {
+     "name": "about",
+     "label": "Anything else you'd like us to know? (optional)",
+     "type": "textarea",
+     "maxLength": 1500,
+     "help": "Skills, experience, or questions you have. Please don't include health information."
+    }
+   ]
+  },
+  "partner": {
+   "id": "partner",
+   "title": "Partnership and funding enquiry",
+   "submitLabel": "Send enquiry",
+   "subject": "Partner or funder enquiry",
+   "replyTo": "email",
+   "successTitle": "Enquiry sent",
+   "successMessage": "Thank you. A director will reply by email within five working days.",
+   "fields": [
+    {
+     "name": "name",
+     "label": "Your name",
+     "type": "text",
+     "required": true,
+     "maxLength": 100,
+     "autocomplete": "name"
+    },
+    {
+     "name": "organisation",
+     "label": "Organisation",
+     "type": "text",
+     "required": true,
+     "maxLength": 150,
+     "autocomplete": "organization"
+    },
+    {
+     "name": "role",
+     "label": "Your role (optional)",
+     "type": "text",
+     "maxLength": 100,
+     "autocomplete": "organization-title"
+    },
+    {
+     "name": "email",
+     "label": "Email address",
+     "type": "email",
+     "required": true,
+     "maxLength": 200,
+     "autocomplete": "email"
+    },
+    {
+     "name": "kind",
+     "label": "What would you like to discuss?",
+     "type": "select",
+     "required": true,
+     "requiredMessage": "Choose what you'd like to discuss.",
+     "options": [
+      {
+       "value": "funding",
+       "label": "Funding or a grant programme"
+      },
+      {
+       "value": "venue",
+       "label": "Offering a venue"
+      },
+      {
+       "value": "delivery",
+       "label": "Delivering activities together"
+      },
+      {
+       "value": "referral",
+       "label": "Referring people to activities"
+      },
+      {
+       "value": "in-kind",
+       "label": "In-kind support or sponsorship"
+      },
+      {
+       "value": "other",
+       "label": "Something else"
+      }
+     ]
+    },
+    {
+     "name": "message",
+     "label": "Your enquiry",
+     "type": "textarea",
+     "required": true,
+     "maxLength": 3000
+    }
+   ]
+  },
+  "updates": {
+   "id": "updates",
+   "title": "Get occasional updates",
+   "submitLabel": "Sign up for updates",
+   "subject": "Updates sign-up",
+   "replyTo": "email",
+   "successTitle": "You're signed up",
+   "successMessage": "Thank you. We'll only email when there's real news, such as a new activity starting. Reply \"stop\" at any time to unsubscribe.",
+   "fields": [
+    {
+     "name": "email",
+     "label": "Email address",
+     "type": "email",
+     "required": true,
+     "maxLength": 200,
+     "autocomplete": "email"
+    },
+    {
+     "name": "name",
+     "label": "Your name (optional)",
+     "type": "text",
+     "required": false,
+     "maxLength": 100,
+     "autocomplete": "name"
+    },
+    {
+     "name": "consent",
+     "label": "I'd like to receive occasional email updates from Seek My Tribe.",
+     "type": "consent",
+     "required": true
+    }
+   ]
+  }
+ },
+ "contactEmail": "hello@seekmytribe.com"
+}

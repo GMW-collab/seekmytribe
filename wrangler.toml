@@ -1,10 +1,21 @@
-# Cloudflare Pages configuration. See docs/HANDOVER.md, "Hosting on Cloudflare Pages".
+# Cloudflare Worker configuration. See docs/HANDOVER.md, section 7.
+#
+# In Cloudflare (Workers & Pages > this Worker > Settings > Build):
+#   Build command:  npm run build:cloudflare
+#   Deploy command: npx wrangler deploy        (Cloudflare's default)
+
 name = "seekmytribe"
-pages_build_output_dir = "dist"
+main = "src/cloudflare/worker.ts"
 compatibility_date = "2026-09-01"
 
-# Non-secret settings. Secrets (FORM_SECRET, RESEND_API_KEY) are added in the
-# Cloudflare dashboard, never here.
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+# The Worker runs first for every request, so it can add security headers and form tokens.
+run_worker_first = true
+not_found_handling = "404-page"
+
+# Non-secret settings. Secrets (FORM_SECRET, RESEND_API_KEY) and FORM_TO_EMAIL are
+# added in the Cloudflare dashboard under Settings > Variables & Secrets, never here.
 [vars]
-SITE_URL = "https://seekmytribe.com"
 FORM_FROM_EMAIL = "Seek My Tribe website <website@seekmytribe.com>"

@@ -3,8 +3,8 @@
 The website for Seek My Tribe, a community interest company creating welcoming,
 real-world activities where people can meet by doing something together.
 
-It is a small static site, hosted on Cloudflare Pages, with the forms handled
-by Pages Functions. There is no framework, no database and almost nothing to
+It is a small static site, hosted on Cloudflare as a Worker with static assets;
+the Worker handles the forms. There is no framework, no database and almost nothing to
 keep updated. A plain Node server is included as a fallback host.
 
 - Content lives in plain files in [`content/`](content/) and can be edited on GitHub or through the editor at `/admin/`.
@@ -30,7 +30,7 @@ npm run dev            # review copy at http://localhost:8080, rebuilds on chang
 | --- | --- |
 | `npm run dev` | Build the review copy and serve it, restarting on changes |
 | `npm run build:preview` | Build the review copy into `dist/` (flags unconfirmed facts, shows drafts, hidden from search engines) |
-| `npm run build:cloudflare` | Used by Cloudflare Pages: `main` builds the public site, other branches build review copies |
+| `npm run build:cloudflare` | Used by Cloudflare's build: a review copy until the build variable `SITE_MODE=production` is set |
 | `npm run build:production` | Build the public site. Stops with a list if launch-critical facts are unverified |
 | `npm start` | Serve `dist/` and handle forms |
 | `npm test` | Unit and integration tests (Node's built-in test runner) |
@@ -51,8 +51,7 @@ content/          everything staff edit: activities, programmes, guides, policie
 public/           static files copied as-is: CSS, browser JS, images, the /admin editor
 src/build.ts      turns content + templates into dist/
 src/server.ts     Node fallback host: serves dist/, adds security headers, handles /api/forms/*
-src/cloudflare/   Cloudflare Pages adapter (used by functions/)
-functions/        Cloudflare Pages Functions: form handler and token middleware
+src/cloudflare/   the Cloudflare Worker: forms, page tokens, security headers
 src/forms/        form definitions, validation, spam protection, email delivery
 src/templates/    page templates (plain TypeScript functions returning escaped HTML)
 tests/            node:test suites and fixtures

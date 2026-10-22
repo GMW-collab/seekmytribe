@@ -11,7 +11,7 @@ services:
   hosting_provider:
     value: Cloudflare (cloudflare.com)
     verified: false
-    source: Chosen 22 Oct 2026. Mark verified once the Pages project exists.
+    source: Chosen 22 Oct 2026. Mark verified once the Worker is deployed.
     launch: true
 
 # Online donations through Stripe Payment Links (Stripe hosts the payment page,

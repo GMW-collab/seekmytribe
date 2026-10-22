@@ -23,7 +23,7 @@ record was confirmed later that day (see section 6).
 
 | Decision | Why |
 | --- | --- |
-| Cloudflare Pages for hosting (Node server kept as a fallback) | Free, fast, no server to maintain; the CIC already uses Cloudflare. |
+| Cloudflare Worker with static assets for hosting (Node server kept as a fallback) | Free, fast, no server to maintain; the CIC already uses Cloudflare. |
 | No framework; a small TypeScript build script | The package registry was unavailable during the build. On reflection this suits a small CIC: two runtime dependencies, nothing to upgrade, runs on any Node host. Astro was the original plan and remains a reasonable migration later. |
 | Content in YAML/Markdown files, edited through Decap CMS | Free, no database, every change is a reviewable commit, staff don't need to touch code. |
 | No database; form submissions are emailed | Data minimisation. Nothing personal is stored on the web server. |
@@ -152,7 +152,7 @@ The production build still refuses to run until the items marked **launch** are 
 | Community interest statement | Paraphrased from brief | Replace with the CIC 36 wording from the incorporation documents **(launch)** |
 | Contact email | `hello@seekmytribe.com` assumed | Create the mailbox or forwarding (see section 7) **(launch)** |
 | Safeguarding lead | Not appointed | Appoint before any activity **(launch)** |
-| Email provider, host | Chosen (Resend, Cloudflare Pages) but not set up | Mark verified once accounts exist **(launch)** |
+| Email provider, host | Chosen (Resend, Cloudflare) but not set up | Mark verified once accounts exist **(launch)** |
 | Asset lock wording | Standard CIC wording | Check against the articles |
 | Area, phone, postal address, insurance | Not supplied | Add when known |
 | "We haven't yet run activities or received grant funding" (Partners page, overview) | True as of incorporation today | Update as soon as it changes |
@@ -165,11 +165,13 @@ The registered office (128 City Road) is a widely used registered-address servic
 
 Editor notes (dashed purple boxes in the review copy) also mark where the founder's story, sourced statistics and costed donation examples should go. They never appear in production.
 
-## 7. Hosting on Cloudflare Pages, and moving the domain from GoDaddy
+## 7. Hosting on Cloudflare, and moving the domain from GoDaddy
 
-**Recommendation: Cloudflare Pages, free plan.** The site's pages are static files, which Pages serves from Cloudflare's network at no cost, and the form handling runs as Pages Functions (small pieces of server code that run on Cloudflare). There is no server to maintain. The free plan includes a daily allowance of Function requests that is far above what this site will need; check Cloudflare's current limits when you sign up. Only page loads and form posts use Functions; CSS, images and scripts don't (see `public/_routes.json`).
+**Setup: a Cloudflare Worker with static assets, free plan.** The built pages, CSS and images are uploaded as the Worker's static assets. A small Worker (`src/cloudflare/worker.ts`) runs in front of them to handle form posts, add a fresh spam-protection token to each page's forms, and add security headers. There's no server to maintain. The free plan's daily request allowance is far above what this site will need; check Cloudflare's current limits.
 
-The Node server (`npm start`) is still included, so the site can move to any other host later without changes.
+(This was first set up for Cloudflare Pages. The project was created as a Worker, which is now Cloudflare's main recommended path, so the configuration was switched to match.)
+
+The Node server (`npm start`) is still included, so the site can move to any other host later.
 
 ### Accounts the director needs to create
 
@@ -177,42 +179,53 @@ Claude can't create accounts or enter passwords, so these need doing by a person
 
 | Account | Why | Cost |
 | --- | --- | --- |
-| GitHub (already exists: GMW-collab) | Holds the code; Cloudflare deploys from it | Free |
+| GitHub (exists: GMW-collab/seekmytribe) | Holds the code; Cloudflare deploys from it | Free |
 | Cloudflare | Hosting, DNS, optional email forwarding | Free plan |
 | Resend | Sends form submissions to your inbox | Has a free tier; check current limits |
 | Stripe | Donations (section 7b) | No monthly fee; a fee per donation |
 
-### Step by step
+### Cloudflare settings
 
-1. **Put the code on GitHub.** Push the delivered code to `GMW-collab/seekmytribe`, or install the Claude GitHub App on that repository so Claude can push.
-2. **Create the Pages project.** In Cloudflare: Workers & Pages → Create → Pages → Connect to Git → choose the repository.
-   - Framework preset: *None*
-   - Build command: `npm run build:cloudflare`
-   - Build output directory: `dist`
-   - Node version comes from `.node-version` (22.22.0).
-3. **Add settings.** Pages project → Settings → Variables and secrets:
-   - `FORM_SECRET` (type: secret) — a long random string. Generate one with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.
-   - `RESEND_API_KEY` (secret) — from Resend.
-   - `FORM_TO_EMAIL` — the inbox that receives submissions.
-   - `SITE_URL` and `FORM_FROM_EMAIL` are already in `wrangler.toml`.
-4. **Deploy a review copy first.** The `main` branch builds the public site, which is deliberately blocked until the launch facts in section 6 are verified. Push a branch called `preview` to get a review copy at a `*.pages.dev` address. Every non-`main` branch builds as a review copy, hidden from search engines.
-5. **Check the review copy** (this couldn't be tested from here): load a few pages; view source and confirm forms contain a long `_t` value, not `__FORM_TOKEN__`; send one test from the contact form; open `/donate/`.
-6. **Verify the launch facts**, merge to `main`, and Cloudflare publishes the public site.
-7. **Optional hardening.** In Cloudflare → Security → WAF, add a rate-limiting rule for `/api/forms/*` if your plan includes one. The site's built-in limit is a soft one on Cloudflare.
+Workers & Pages → the `seekmytribe` Worker → Settings:
+
+- **Build:**
+  - Git repository: `GMW-collab/seekmytribe`, production branch `main`
+  - Build command: `npm run build:cloudflare`
+  - Deploy command: `npx wrangler deploy` (the default)
+  - Root directory: leave blank
+- **Variables & Secrets** (used by the running site):
+  - `FORM_SECRET` (type: secret): a long random string. Generate one with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.
+  - `RESEND_API_KEY` (secret): from Resend.
+  - `FORM_TO_EMAIL`: the inbox that receives submissions.
+  - `FORM_FROM_EMAIL` is already set in `wrangler.toml`.
+- **Build variables** (used only while building): leave empty for now. Once the launch facts in section 6 are verified, add `SITE_MODE` = `production`. Until then every deploy is a review copy: unconfirmed facts are highlighted and search engines are told not to index it.
+
+The Worker name in `wrangler.toml` is `seekmytribe`. If the Worker in the dashboard has a different name, change one to match.
+
+### First deploy checks
+
+These couldn't be tested from here. After the first successful deploy, open the `*.workers.dev` address and:
+
+1. Click through a few pages, including `/activities/` and `/donate/`.
+2. View the page source of `/contact/`: the hidden `_t` field should hold a long value, not `__FORM_TOKEN__`.
+3. Open `/healthz`: it reports whether forms and email are switched on.
+4. Send one test message from the contact form once the variables above are set.
+
+Optional hardening: in Security → WAF, add a rate-limiting rule for `/api/forms/*` if your plan includes one. The site's built-in limit is a soft one on Cloudflare.
 
 ### Moving the domain from GoDaddy
 
 The domain can stay **registered** at GoDaddy. What changes is who answers for it (DNS).
 
-**Recommended: switch the nameservers to Cloudflare.** Needed for the bare `seekmytribe.com` (without `www`) to point at Pages.
+**Recommended: switch the nameservers to Cloudflare.** Needed for the Worker to serve `seekmytribe.com` and `www.seekmytribe.com`.
 
 1. In Cloudflare: Add a domain → `seekmytribe.com` → Free plan. Cloudflare copies the existing DNS records.
 2. **Before switching, check the email records.** If anyone has email at `@seekmytribe.com` (GoDaddy email or Microsoft 365, for example), confirm the `MX`, `TXT` (SPF) and any `CNAME` records were copied exactly. Missing these stops email working. If unsure, compare against GoDaddy's DNS page first.
 3. In GoDaddy: My Products → the domain → DNS → Nameservers → Change → enter the two nameservers Cloudflare gives you. It can take from minutes to a day.
-4. In the Pages project: Custom domains → add `seekmytribe.com` and `www.seekmytribe.com`. Cloudflare sets up the records and HTTPS certificates.
+4. In the Worker: Settings → Domains & Routes → Add → Custom domain → `seekmytribe.com`, then again for `www.seekmytribe.com`. Cloudflare sets up the records and HTTPS certificates.
 5. Once the new site is live, cancel the GoDaddy Website Builder plan (keep the domain registration, and keep auto-renew on).
 
-**Alternative, if you'd rather leave DNS at GoDaddy:** point `www` at the Pages address with a `CNAME` in GoDaddy, and use GoDaddy's domain forwarding to send `seekmytribe.com` to `https://www.seekmytribe.com`. This works but is less tidy, and forwarding can be unreliable over HTTPS.
+Custom domains on a Worker need the domain's DNS to be on Cloudflare, so the nameserver switch above is the way to go.
 
 **Do not change nameservers or DNS without the director's go-ahead.** Nothing has been changed so far.
 
@@ -300,9 +313,9 @@ In rough order:
 
 ## 11. Deploying and rolling back
 
-**Deploy (Cloudflare Pages)**
+**Deploy (Cloudflare)**
 
-Push to `main`. Cloudflare runs `npm run build:cloudflare` and publishes. Any other branch gets its own review address. Run `npm run check` locally before pushing if you can.
+Push to `main`. Cloudflare runs `npm run build:cloudflare`, then `npx wrangler deploy`. Run `npm run check` locally before pushing if you can.
 
 **Deploy (any other Node host)**
 
@@ -315,7 +328,7 @@ npm start
 
 **Roll back**
 
-In Cloudflare Pages → Deployments, choose an earlier deployment → "Rollback to this deployment". It takes effect in seconds.
+In Cloudflare → the Worker → Deployments, choose an earlier version and roll back to it. It takes effect in seconds.
 
 Every deploy is also a commit. To undo the last change: `git revert <commit>` and push,
 or redeploy the previous commit from the host's dashboard. Content edits made in
@@ -330,15 +343,15 @@ without the directors' approval.
 ## 12. Quality checks performed
 
 - `npm run typecheck`: no errors.
-- `npm test`: 57 tests pass, covering content validation, the production guard, form validation, spam protection, email sending (with a fake), the server's headers, redirects, path-traversal protection, no-JavaScript form fallbacks, and the build output (one h1 per page, labelled controls, no broken internal links, no leaked placeholders).
+- `npm test`: 60 tests pass, covering content validation, the production guard, form validation, spam protection, email sending (with a fake), the server's headers, redirects, path-traversal protection, no-JavaScript form fallbacks, and the build output (one h1 per page, labelled controls, no broken internal links, no leaked placeholders).
 - `npm run test:browser` (Playwright/Chromium): every page at 320px and 1280px with no sideways scrolling; WCAG AA text contrast for all visible text (the check was confirmed to catch a deliberate failure); skip link and visible focus; mobile menu including Escape; contact form error summary, focus and `aria-invalid`; the honest "not switched on yet" message when email isn't configured; activity filters, URL state and no-results message (using test fixtures).
 - Manual review of screenshots for the home page, activities (empty and with fixtures), activity detail, partners, impact and about pages, at desktop and mobile widths.
 
-- Cloudflare Functions: the form handler and middleware are tested with standard Request/Response objects, bundled with esbuild for a Workers runtime (no Node-only imports), and the bundle was run once successfully.
+- Cloudflare Worker: tested with standard Request/Response objects and a stand-in for the static assets binding; bundled with esbuild for the Workers runtime (no Node-only imports) and the bundle run once successfully.
 
 **Not yet tested**
 
-- A real deploy on Cloudflare Pages (follow the checks in section 7, step 5).
+- A real deploy on Cloudflare (follow the first deploy checks in section 7).
 - Real email delivery (needs a Resend key).
 - Live Stripe links.
 - Self-hosted fonts (CDN blocked during build).
